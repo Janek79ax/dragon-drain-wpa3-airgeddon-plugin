@@ -3,8 +3,8 @@
 #Global shellcheck disabled warnings
 #shellcheck disable=SC2034,SC2154
 
-plugin_name="WPA3 dragon bleed"
-plugin_description="A plugin to perform a WPA3 dragon bleed attack"
+plugin_name="WPA3 dragon drain"
+plugin_description="A plugin to perform a WPA3 dragon drain attack"
 plugin_author="Janek"
 
 #This plugin is based in the Wacker script. Credits to the authors: https://github.com/blunderbuss-wctf/wacker
@@ -13,7 +13,7 @@ plugin_enabled=1
 
 plugin_minimum_ag_affected_version="11.50"
 plugin_maximum_ag_affected_version=""
-plugin_distros_supported=("*")
+plugin_distros_supported=("kali")
 
 #Custom function. Channel mappings to frequency
 function custom_channel_mappings() {
@@ -64,8 +64,8 @@ function custom_channel_mappings() {
 }
 
 
-#Custom function. Execute WPA3 dragon bleed attack
-function exec_wpa3_dragon_bleed_attack() {
+#Custom function. Execute WPA3 dragon drain attack
+function exec_wpa3_dragon_drain_attack() {
 	#date +%s >> /tmp/deb
 	debug_print
 
@@ -78,11 +78,9 @@ function exec_wpa3_dragon_bleed_attack() {
 
 	recalculate_windows_sizes
 
-	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon bleed attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_bleed_attack.py ${bssid} ${channel} ${interface}"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_bleed_attack.py ${bssid} ${channel} ${interface}"
-	
-	#manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon bleed attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_bleed_attack.py ${DICTIONARY} ${bssid} ${bssid} ${interface}  | tee ${tmpdir}agwpa3/${wpa3log_file} ${colorize}" "wpa3 dragon bleed attack" "active"
-	#wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_bleed_attack.py ${DICTIONARY} ${essid} ${bssid} ${interface} ${freq} ${custom_wpa_supplicant_binary_path} ${tmpdir}agwpa3 ${language}" "wpa3 dragon bleed attack"
+	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
+	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"	
+
 
 }
 
@@ -107,7 +105,7 @@ function attack_script_validation() {
 
 	debug_print
 
-	if ! [ -f "${scriptfolder}${plugins_dir}wpa3_dragon_bleed_attack.py" ]; then
+	if ! [ -f "${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py" ]; then
 		echo
 		language_strings "${language}" "wpa3_online_attack_8" "red"
 		language_strings "${language}" 115 "read"
@@ -153,7 +151,7 @@ function python3_validation() {
 }
 
 #Custom function. Prepare WPA3 online dictionary attack
-function wpa3_dragon_bleed_attack_option() {
+function wpa3_dragon_drain_attack_option() {
 
 	debug_print
 
@@ -218,7 +216,7 @@ function wpa3_dragon_bleed_attack_option() {
 	language_strings "${language}" 33 "yellow"
 	language_strings "${language}" 4 "read"
 
-	exec_wpa3_dragon_bleed_attack
+	exec_wpa3_dragon_drain_attack
 }
 
 #Custom function. Check if the password was captured using wpa3 online dictionary attack and manage to save it on a file
@@ -275,7 +273,7 @@ function wpa3_attacks_menu() {
 			explore_for_targets_option "WPA3"
 		;;
 		5)
-			wpa3_dragon_bleed_attack_option
+			wpa3_dragon_drain_attack_option
 		;;
 		*)
 			invalid_menu_option
@@ -287,14 +285,14 @@ function wpa3_attacks_menu() {
 
 #Prehook for explore_for_targets_option function to show right message on WPA3 filtered scanning
 #shellcheck disable=SC2016
-function wpa3_dragon_bleed_prehook_explore_for_targets_option() {
+function wpa3_dragon_drain_prehook_explore_for_targets_option() {
 
 	sed -zri 's|"WPA3"\)\n\t{4}#Only WPA3 including WPA2\/WPA3 in Mixed mode\n\t{4}#Not used yet in airgeddon\n\t{4}:|"WPA3"\)\n\t\t\t\t#Only WPA3 including WPA2/WPA3 in Mixed mode\n\t\t\t\tlanguage_strings "${language}" "wpa3_online_attack_4" "yellow"|' "${scriptfolder}${scriptname}" 2> /dev/null
 }
 
 #Prehook for hookable_for_languages function to modify language strings
 #shellcheck disable=SC1111
-function wpa3_dragon_bleed_prehook_hookable_for_languages() {
+function wpa3_dragon_drain_prehook_hookable_for_languages() {
 
 	arr["ENGLISH",60]="12. About & Credits / Sponsorship mentions"
 	arr["SPANISH",60]="12. Acerca de & Créditos / Menciones de patrocinadores"
@@ -352,19 +350,19 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_online_attack_2"]="WPA3 قائمة هجمات"
 	arr["CHINESE","wpa3_online_attack_2"]="WPA3 攻击菜单"
 
-	arr["ENGLISH","wpa3_online_attack_3"]="5.  WPA3 dragon bleed attack"
-	arr["SPANISH","wpa3_online_attack_3"]="5.  Ataque de online diccionario de WPA3"
-	arr["FRENCH","wpa3_online_attack_3"]="5.  Attaque online WPA3 avec dictionaire"
-	arr["CATALAN","wpa3_online_attack_3"]="5.  Atac de diccionari en línia de WPA3"
-	arr["PORTUGUESE","wpa3_online_attack_3"]="5.  Ataque online de dicionário no WPA3"
-	arr["RUSSIAN","wpa3_online_attack_3"]="5.  Онлайн атака на WPA3 со словарём"
-	arr["GREEK","wpa3_online_attack_3"]="5.  Διαδικτυακή επίθεση σε WPA3 με λεξικό"
-	arr["ITALIAN","wpa3_online_attack_3"]="5.  Attacco online WPA3 con dizionario"
-	arr["POLISH","wpa3_online_attack_3"]="5.  Atak WPA3 Dragon Bleed"
-	arr["GERMAN","wpa3_online_attack_3"]="5.  WPA3-Angriff auf das Online-Wörterbuch"
+	arr["ENGLISH","wpa3_online_attack_3"]="5.  WPA3 dragon drain attack"
+	arr["POLISH","wpa3_online_attack_3"]="5.  Atak WPA3 Dragon Drain"
+	arr["SPANISH","wpa3_online_attack_3"]="5.  Ataque de diccionario en línea contra WPA3"
+	arr["FRENCH","wpa3_online_attack_3"]="5.  Attaque par dictionnaire en ligne contre WPA3"
+	arr["CATALAN","wpa3_online_attack_3"]="5.  Atac per diccionari en línia contra WPA3"
+	arr["PORTUGUESE","wpa3_online_attack_3"]="5.  Ataque de dicionário online contra o WPA3"
+	arr["RUSSIAN","wpa3_online_attack_3"]="5.  Онлайн-атака словарём на WPA3"
+	arr["GREEK","wpa3_online_attack_3"]="5.  Επίθεση λεξικού μέσω Διαδικτύου στο WPA3"
+	arr["ITALIAN","wpa3_online_attack_3"]="5.  Attacco online con dizionario contro WPA3"
+	arr["GERMAN","wpa3_online_attack_3"]="5.  WPA3-Wörterbuchangriff über das Internet"
 	arr["TURKISH","wpa3_online_attack_3"]="5.  WPA3 çevrimiçi sözlük saldırısı"
-	arr["ARABIC","wpa3_online_attack_3"]="5.  WPA3 قاموس الهجوم علي الشبكة ل"
-	arr["CHINESE","wpa3_online_attack_3"]="5.  WPA3 在线字典攻击"
+	arr["ARABIC","wpa3_online_attack_3"]="5.  هجوم قاموس عبر الإنترنت على WPA3"
+	arr["CHINESE","wpa3_online_attack_3"]="5.  WPA3 在线词典攻击"
 
 	arr["ENGLISH","wpa3_online_attack_4"]="WPA3 filter enabled in scan. When started, press [Ctrl+C] to stop..."
 	arr["SPANISH","wpa3_online_attack_4"]="Filtro WPA3 activado en escaneo. Una vez empezado, pulse [Ctrl+C] para pararlo..."
@@ -380,19 +378,19 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_online_attack_4"]="...للإيقاف [Ctrl+C] عند البدء ، اضغط على .WPA3 تم تفعيل المسح لشبكات"
 	arr["CHINESE","wpa3_online_attack_4"]="已在扫描时启用  WPA3 过滤器。启动中... 按 [Ctrl+C] 停止..."
 
-	arr["ENGLISH","wpa3_online_attack_5"]="WPA3 online dictionary attack takes considerably longer than an offline decryption attack, so it is recommended to only perform it over pure WPA3 networks. If your target network is in WPA2/WPA3 \"Mixed Mode\", it is recommended to carry out the traditional WPA2 attacks (Handshake, PMKID) instead of the online attack"
-	arr["SPANISH","wpa3_online_attack_5"]="El ataque de diccionario online de WPA3 tarda bastante más tiempo que un ataque de descifrado offline, por lo que se recomienda solo realizarlo sobre redes puras WPA3. Si tu red objetivo está en WPA2/WPA3 \"Mixed Mode\", lo recomendable es realizar los ataques tradicionales de WPA2 (Handshake, PMKID) en lugar del ataque online"
-	arr["FRENCH","wpa3_online_attack_5"]="L'attaque en ligne avec dictionnaire WPA3 prend beaucoup plus de temps qu'une attaque de décryptage hors ligne, il est donc recommandé de ne l'exécuter que sur des réseaux WPA3 purs. Si votre réseau cible est en WPA2/WPA3 \"Mixed Mode\", il est recommandé d'effectuer les attaques WPA2 traditionnelles (Handshake, PMKID) au lieu de l'attaque en ligne"
-	arr["CATALAN","wpa3_online_attack_5"]="L'atac de diccionari online de WPA3 triga força més temps que un atac de desxifrat offline, per la qual cosa es recomana només fer-ho sobre xarxes pures WPA3. Si la teva xarxa objectiu està a WPA2/WPA3 \"Mixed Mode\", el recomanable és realitzar els atacs tradicionals de WPA2 (Handshake, PMKID) en lloc de l'atac en línia"
-	arr["PORTUGUESE","wpa3_online_attack_5"]="O ataque online de dicionário no WPA3 demora consideravelmente mais que um ataque de descriptografia offline, portanto, é recomendável executá-lo apenas em redes WPA3 puras. Se a rede alvo estiver em WPA2/WPA3 \"Mixed Mode\", é recomendável realizar os ataques WPA2 tradicionais (Handshake ou PMKID) em vez do ataque online"
-	arr["RUSSIAN","wpa3_online_attack_5"]="Онлайн атака на WPA3 по словарю занимает значительно больше времени, чем офлайн атака с дешифрованием, поэтому рекомендуется выполнять ее только в WPA3 сетях. Если ваша целевая сеть находится в WPA2/WPA3 \"Mixed Mode\", рекомендуется проводить традиционные атаки на WPA2 (handshake, PMKID)"
-	arr["GREEK","wpa3_online_attack_5"]="Η διαδικτυακή επίθεση σε WPA3 με λεξικό διαρκεί πολύ περισσότερο από μια επίθεση αποκρυπτογράφησης εκτός σύνδεσης, επομένως συνιστάται να εκτελείται μόνο μέσω καθαρά WPA3 δικτύων. Εάν το δίκτυο-στόχος σας είναι σε WPA2/WPA3 \"Mixed Mode\", συνιστάται να πραγματοποιήσετε τις καθιερωμένες επιθέσεις WPA2 (Handshake, PMKID) αντί για την διαδικτυακή επίθεση"
-	arr["ITALIAN","wpa3_online_attack_5"]="L'attacco online WPA3 con dizionario richiede molto più tempo di un attacco di decriptazione offline, quindi si consiglia di eseguirlo solo su reti WPA3 pure. Se la rete di destinazione è in WPA2/WPA3 \"Modalità mista\", si consiglia di eseguire i tradizionali attacchi WPA2 (Handshake, PMKID) anziché l'attacco online"
-	arr["POLISH","wpa3_online_attack_5"]="Atak słownikowy online WPA3 trwa znacznie dłużej niż atak offline. Dlatego zaleca się przeprowadzanie go w sieciach z aktywnym wyłącznie WPA3. Jeśli Twoja sieć docelowa jest w trybie WPA2/WPA3 \"Mixed Mode\", zaleca się przeprowadzenie tradycyjnych ataków WPA2 (Handshake, PMKID) zamiast ataków online"
-	arr["GERMAN","wpa3_online_attack_5"]="Der WPA3-Online-Wörterbuchangriff dauert erheblich länger als ein Offline-Entschlüsselungsangriff, daher wird es empfohlen, ihn nur über reine WPA3-Netzwerke durchzuführen. Wenn sich Ihr Zielnetzwerk im WPA2/WPA3 \"Mixed Mode\", befindet, empfiehlt es sich, anstelle des Online-Angriffs die traditionellen WPA2-Angriffe (Handshake, PMKID) durchzuführen"
-	arr["TURKISH","wpa3_online_attack_5"]="WPA3 çevrimiçi sözlük saldırısı, çevrimdışı şifre çözme saldırısından çok daha uzun sürer, bu nedenle yalnızca saf WPA3 ağları üzerinden gerçekleştirilmesi önerilir. Hedef ağınız WPA2/WPA3 \"Mixed Mode\" da ise, çevrimiçi saldırı yerine geleneksel WPA2 saldırılarını (Handshake, PMKID) gerçekleştirmeniz önerilir"
-	arr["ARABIC","wpa3_online_attack_5"]="(Handshake, PMKID) WPA2 من الافضل ان تستخدم هجمات ال WPA2/WPA3 \"Mixed Mode\" يستغرق الكثير من الوقت ,إن كان هدفك شبكة  WPA3 قاموس الهجوم علي الشبكة ل"
-	arr["CHINESE","wpa3_online_attack_5"]="WPA3 在线字典攻击比离线字典解密攻击花费的时间要长得多，因此建议仅在使用纯  WPA3 加密方式网络上执行此攻击。如果您的目标网络处于  WPA2/WPA3 \"混合模式\"，建议进行传统的  WPA2 攻击 (握手、PMKID) 而不是在线攻击"
+	arr["ENGLISH","wpa3_online_attack_5"]="WPA3 dragon drain attack runs forever aiming to overload the router. "
+	arr["SPANISH","wpa3_online_attack_5"]="El ataque de drenaje de WPA3 se ejecuta indefinidamente con el objetivo de sobrecargar el router."
+	arr["FRENCH","wpa3_online_attack_5"]="L'attaque dragon drain de WPA3 s'exécute indéfiniment pour surcharger le routeur."
+	arr["CATALAN","wpa3_online_attack_5"]="L'atac dragon drain de WPA3 s'executa indefinidament amb l'objectiu de sobrecarregar el encaminador."
+	arr["PORTUGUESE","wpa3_online_attack_5"]="O ataque dragon drain do WPA3 roda indefinidamente com o objetivo de sobrecarregar o roteador."
+	arr["RUSSIAN","wpa3_online_attack_5"]="Атака WPA3 Dragon Drain выполняется бесконечно, перегружая маршрутизатор."
+	arr["GREEK","wpa3_online_attack_5"]="Η επίθεση WPA3 dragon drain εκτελείται επ' αόριστον με σκοπό να υπερφορτώσει τον δρομολογητή."
+	arr["ITALIAN","wpa3_online_attack_5"]="L'attacco dragon drain WPA3 viene eseguito all'infinito per sovraccaricare il router."
+	arr["POLISH","wpa3_online_attack_5"]="Atak WPA3 Dragon Drain działa bez końca, próbując przeciążyć router."
+	arr["GERMAN","wpa3_online_attack_5"]="Der WPA3-Dragon-Drain-Angriff läuft ununterbrochen, um den Router zu überlasten."
+	arr["TURKISH","wpa3_online_attack_5"]="WPA3 dragon drain saldırısı, yönlendiriciyi aşırı yüklemek amacıyla sonsuza dek devam eder."
+	arr["ARABIC","wpa3_online_attack_5"]="هجوم WPA3 Dragon Drain يستمر إلى ما لا نهاية بهدف إثقال كاهل جهاز التوجيه."
+	arr["CHINESE","wpa3_online_attack_5"]="WPA3 龙之耗尽攻击持续运行，旨在使路由器过载。"
 
 	arr["ENGLISH","wpa3_online_attack_6"]="The selected network is invalid. The target network must be WPA3 or WPA2/WPA3 in \"Mixed Mode\""
 	arr["SPANISH","wpa3_online_attack_6"]="La red seleccionada no es válida. La red objetivo debe ser WPA3 o WPA2/WPA3 en \"Mixed Mode\""
@@ -422,19 +420,19 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_online_attack_7"]="على النظام python3.1+ يتطلب هذا الهجوم تثبيت"
 	arr["CHINESE","wpa3_online_attack_7"]="此攻击需要在您的系统上安装 python3.1+"
 
-	arr["ENGLISH","wpa3_online_attack_8"]="The python3 script required as part of this plugin to run this attack is missing. Please make sure that the file \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" exists and that it is in the plugins dir next to the \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\" file"
-	arr["SPANISH","wpa3_online_attack_8"]="El script de python3 requerido como parte de este plugin para ejecutar este ataque no se encuentra. Por favor, asegúrate de que existe el fichero \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" y que está en la carpeta de plugins junto al fichero \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["FRENCH","wpa3_online_attack_8"]="Le script de python3 requis dans cet plugin pour exécuter cette attaque est manquant. Assurez-vous que le fichier \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" existe et qu'il se trouve dans le dossier plugins à côté du fichier \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["CATALAN","wpa3_online_attack_8"]="El script de python3 requerit com a part d'aquest plugin per executar aquest atac no es troba. Assegureu-vos que existeix el fitxer \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" i que està a la carpeta de plugins al costat del fitxer \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["PORTUGUESE","wpa3_online_attack_8"]="O arquivo python para executar este ataque está ausente. Verifique se o arquivo \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" existe e se está na pasta de plugins com o arquivo \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["RUSSIAN","wpa3_online_attack_8"]="Скрипт, необходимый этому плагину для запуска этой атаки, отсутствует. Убедитесь, что файл \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" существует и находится в папке для плагинов рядом с файлом \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\"."
-	arr["GREEK","wpa3_online_attack_8"]="Το python3 script που απαιτείται ως μέρος αυτής της προσθήκης για την εκτέλεση αυτής της επίθεσης λείπει. Βεβαιωθείτε ότι το αρχείο \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" υπάρχει και ότι βρίσκεται στον φάκελο plugins δίπλα στο αρχείο \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["ITALIAN","wpa3_online_attack_8"]="Lo script python3 richiesto come parte di questo plugin per eseguire questo attacco è assente. Assicurati che il file \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" esista e che sia nella cartella dei plugin assieme al file \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["POLISH","wpa3_online_attack_8"]="Do uruchomienia tego ataku brakuje skryptu python3 wymaganego jako część pluginu. Upewnij się, że plik \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" istnieje i znajduje się w folderze pluginów obok pliku \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\""
-	arr["GERMAN","wpa3_online_attack_8"]="Das python3-Skript, das als Teil dieses Plugins erforderlich ist, um diesen Angriff auszuführen, fehlt. Bitte stellen Sie sicher, dass die Datei \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" vorhanden ist und dass sie sich im Plugin-Ordner neben der Datei \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\" befindet"
-	arr["TURKISH","wpa3_online_attack_8"]="Bu saldırıyı çalıştırmak için bu eklentinin bir parçası olarak gereken python3 komutu dosyası eksik. Lütfen, eklentiler klasöründe \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\" dosyasının yanında, \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" dosyasının da var olduğundan emin olun"
-	arr["ARABIC","wpa3_online_attack_8"]="\"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\" موجود وأنه موجود في مجلد المكونات الإضافية بجوار الملف \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" المطلوب كجزء من هذا البرنامج المساعد لتشغيل هذا الهجوم مفقود. يرجى التأكد من أن الملف pyhton3 سكربت"
-	arr["CHINESE","wpa3_online_attack_8"]="作为此插件的一部分运行此攻击所需的 python3 脚本丢失。请确保文件 \"\${normal_color}wpa3_dragon_bleed_attack.py\${red_color}\" 存在，并且位于 \"\${normal_color}wpa3_dragon_bleed_attack.sh\${red_color}\" 旁边的插件目录中 文件"
+	arr["ENGLISH","wpa3_online_attack_8"]="The python3 script required as part of this plugin to run this attack is missing. Please make sure that the file \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" exists and that it is in the plugins dir next to the \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" file"
+	arr["SPANISH","wpa3_online_attack_8"]="El script de python3 requerido como parte de este plugin para ejecutar este ataque no se encuentra. Por favor, asegúrate de que existe el fichero \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" y que está en la carpeta de plugins junto al fichero \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["FRENCH","wpa3_online_attack_8"]="Le script de python3 requis dans cet plugin pour exécuter cette attaque est manquant. Assurez-vous que le fichier \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" existe et qu'il se trouve dans le dossier plugins à côté du fichier \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["CATALAN","wpa3_online_attack_8"]="El script de python3 requerit com a part d'aquest plugin per executar aquest atac no es troba. Assegureu-vos que existeix el fitxer \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" i que està a la carpeta de plugins al costat del fitxer \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["PORTUGUESE","wpa3_online_attack_8"]="O arquivo python para executar este ataque está ausente. Verifique se o arquivo \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" existe e se está na pasta de plugins com o arquivo \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["RUSSIAN","wpa3_online_attack_8"]="Скрипт, необходимый этому плагину для запуска этой атаки, отсутствует. Убедитесь, что файл \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" существует и находится в папке для плагинов рядом с файлом \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\"."
+	arr["GREEK","wpa3_online_attack_8"]="Το python3 script που απαιτείται ως μέρος αυτής της προσθήκης για την εκτέλεση αυτής της επίθεσης λείπει. Βεβαιωθείτε ότι το αρχείο \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" υπάρχει και ότι βρίσκεται στον φάκελο plugins δίπλα στο αρχείο \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["ITALIAN","wpa3_online_attack_8"]="Lo script python3 richiesto come parte di questo plugin per eseguire questo attacco è assente. Assicurati che il file \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" esista e che sia nella cartella dei plugin assieme al file \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["POLISH","wpa3_online_attack_8"]="Do uruchomienia tego ataku brakuje skryptu python3 wymaganego jako część pluginu. Upewnij się, że plik \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" istnieje i znajduje się w folderze pluginów obok pliku \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\""
+	arr["GERMAN","wpa3_online_attack_8"]="Das python3-Skript, das als Teil dieses Plugins erforderlich ist, um diesen Angriff auszuführen, fehlt. Bitte stellen Sie sicher, dass die Datei \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" vorhanden ist und dass sie sich im Plugin-Ordner neben der Datei \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" befindet"
+	arr["TURKISH","wpa3_online_attack_8"]="Bu saldırıyı çalıştırmak için bu eklentinin bir parçası olarak gereken python3 komutu dosyası eksik. Lütfen, eklentiler klasöründe \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" dosyasının yanında, \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" dosyasının da var olduğundan emin olun"
+	arr["ARABIC","wpa3_online_attack_8"]="\"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" موجود وأنه موجود في مجلد المكونات الإضافية بجوار الملف \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" المطلوب كجزء من هذا البرنامج المساعد لتشغيل هذا الهجوم مفقود. يرجى التأكد من أن الملف pyhton3 سكربت"
+	arr["CHINESE","wpa3_online_attack_8"]="作为此插件的一部分运行此攻击所需的 python3 脚本丢失。请确保文件 \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" 存在，并且位于 \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" 旁边的插件目录中 文件"
 
 	arr["ENGLISH","wpa3_online_attack_9"]="The precompiled custom wpa_supplicant binary file needed to execute this attack is missing. Please make sure that the binary according to your processor architecture exists in the \"\${normal_color}wpa_supplicant_binaries\${red_color}\" dir which is inside the plugins dir"
 	arr["SPANISH","wpa3_online_attack_9"]="El fichero binario personalizado y precompilado de wpa_supplicant necesario para ejecutar este ataque no se encuentra. Por favor, asegúrate de que existe el binario acorde a to arquitectura de procesador existe en la carpeta \"\${normal_color}wpa_supplicant_binaries\${red_color}\" dentro de la carpeta de plugins"
@@ -450,47 +448,19 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_online_attack_9"]="داخل مجلد المكونات الإضافية \"\${normal_color}wpa_supplicant_binaries\${red_color}\" المطلوب لتنفيذ هذا الهجوم مفقود. الرجاء التأكد من وجود الملف الثنائي وفقًا لبنية المعالج في المجلد wpa_supplicant الملف الثنائي المخصص المترجم مسبقًا لـ"
 	arr["CHINESE","wpa3_online_attack_9"]="执行此攻击所需的预编译自定义 wpa_supplicant 二进制文件丢失。请确保符合您的处理器架构的二进制文件存在于插件目录内的 \"\${normal_color}wpa_supplicant_binaries\${red_color}\" 目录中"
 
-	arr["ENGLISH","wpa3_online_attack_10"]="To launch this attack, the card must be in \"Managed\" mode. It has been detected that your card is in \"Monitor\" mode, so airgeddon will automatically change it to be able to carry out the attack"
-	arr["SPANISH","wpa3_online_attack_10"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Managed\". Se ha detectado que tu tarjeta está en modo \"Monitor\" por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
-	arr["FRENCH","wpa3_online_attack_10"]="Pour lancer cette attaque, la carte doit être en mode \"Managed\". Il a été détecté que votre carte est en mode \"Monitor\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
-	arr["CATALAN","wpa3_online_attack_10"]="Per llançar aquest atac cal que la targeta estigui en mode \"Managed\". S'ha detectat que la teva targeta està en mode \"Monitor\" pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
-	arr["PORTUGUESE","wpa3_online_attack_10"]="Para iniciar este ataque a interface deve estar no modo \"Managed\". Foi detectado que sua interface está no modo \"Monitor\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
-	arr["RUSSIAN","wpa3_online_attack_10"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Managed\". Ваша карта находится в режиме \"Monitor\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
-	arr["GREEK","wpa3_online_attack_10"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Managed\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Monitor\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
-	arr["ITALIAN","wpa3_online_attack_10"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Managed\". È stato rilevato che la tua scheda è in modalità \"Monitor\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
-	arr["POLISH","wpa3_online_attack_10"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Managed\". Wykryto, że twoja karta jest w trybie \"Monitor\", więc aby móc przeprowadzić atak airgeddon automatycznie go zmieni"
-	arr["GERMAN","wpa3_online_attack_10"]="Um diesen Angriff zu starten, muss sich die Karte im \"Managed\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Monitor\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
-	arr["TURKISH","wpa3_online_attack_10"]="Bu saldırıyı başlatmak için kartın \"Managed\" modunda olması gerekir. Kartınızın \"Monitor\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
-	arr["ARABIC","wpa3_online_attack_10"]="تلقائيًا لتتمكن من تنفيذ الهجوم airgeddon لذلك سيغيرها ,\"Monitor\" تم اكتشاف أن شريحتك في وضع .\"Managed\" لبدء هذا الهجوم ، يجب أن تكون الشريحتك في وضع"
-	arr["CHINESE","wpa3_online_attack_10"]="要发起此攻击，该卡必须处于“管理”模式。检测到您的卡处于“监听”模式，因此 airgeddon 会自动更改它以能够进行攻击"
-
-	arr["ENGLISH","wpa3_online_attack_11"]="If the password for the wifi network is obtained with the WPA3 attack, you should decide where to save it. \${green_color}Type the path to store the file or press [Enter] to accept the default proposal \${normal_color}[\${wpa3_potpath}]"
-	arr["SPANISH","wpa3_online_attack_11"]="Si se consigue la contraseña de la red wifi con el ataque WPA3, hay que decidir donde guardarla. \${green_color}Escribe la ruta donde guardaremos el fichero o pulsa [Enter] para aceptar la propuesta por defecto \${normal_color}[\${wpa3_potpath}]"
-	arr["FRENCH","wpa3_online_attack_11"]="Si le mot de passe est obtenu par une attaque WPA3, il faut ensuite indiquer l'endroit pour la garder. \${green_color}Entrez la route vers l'endroit où vous voulez garder le fichier ou bien appuyez sur [Enter] si la route proposée par défaut vous convient \${normal_color}[\${wpa3_potpath}]"
-	arr["CATALAN","wpa3_online_attack_11"]="Si s'aconsegueix la contrasenya de la xarxa wifi amb l'atac WPA3, cal decidir on guardar-la. \${green_color}Escriu la ruta on guardarem el fitxer o prem [Enter] per acceptar la proposta per defecte \${normal_color}[\${wpa3_potpath}]"
-	arr["PORTUGUESE","wpa3_online_attack_11"]="Se a senha da rede wifi for obtida com o ataque WPA3, onde deseja salvá-la?. \${green_color}Digite o caminho onde armazenar o arquivo ou pressione [Enter] para aceitar o padrão \${normal_color}[\${wpa3_potpath}]"
-	arr["RUSSIAN","wpa3_online_attack_11"]="Если во время WPA3 атаки на Wi-Fi сеть получен пароль, вы должны решить, где его сохранить. \${green_color} Наберите путь для сохранения файла или нажмите [Enter] для принятия значения по умолчанию \${normal_color}[\${wpa3_potpath}]"
-	arr["GREEK","wpa3_online_attack_11"]="Εάν βρεθεί ο κωδικός πρόσβασης για το ασύρματο δίκτυο με την επίθεση WPA3, θα πρέπει να αποφασίσετε που θα τον αποθηκεύσετε. \${green_color}Πληκτρολογήστε το μονοπάτι για την αποθήκευση του αρχείου ή πατήστε [Enter] για την προεπιλεγμένη επιλογή \${normal_color}[\${wpa3_potpath}]"
-	arr["ITALIAN","wpa3_online_attack_11"]="Se si ottiene la password della rete wireless con l'attacco WPA3, decidere dove salvarla. \${green_color}Immettere il percorso dove memorizzare il file o premere [Enter] per accettare la proposta di default \${normal_color}[\${wpa3_potpath}]"
-	arr["POLISH","wpa3_online_attack_11"]="Jeśli hasło sieci wifi zostanie zdobyte atakiem WPA3, musisz zdecydować, gdzie je zapisać. \${green_color}Wpisz ścieżkę, w której będziemy zapisywać plik lub naciśnij [Enter], aby zaakceptować domyślną propozycję \${normal_color}[\${wpa3_potpath}]"
-	arr["GERMAN","wpa3_online_attack_11"]="Wenn Sie das WLAN-Passwort mit dem WPA3-Angriff erhalten, müssen Sie entscheiden, wo Sie es speichern möchten. \${green_color} Geben Sie den Pfad ein, unter dem die Datei gespeichert werden soll, oder drücken Sie die [Enter]-Taste, um den Standardvorschlag \${normal_color}[\${wpa3_potpath}] \${blue_color}zu akzeptieren"
-	arr["TURKISH","wpa3_online_attack_11"]="Kablosuz ağın şifresi WPA3 saldırısıyla elde edilirse, nereye kaydedeceğinize karar vermelisiniz. \${green_color}Dosyayı depolamak için yolu yazın veya varsayılan teklifi kabul etmek için [Enter] tuşuna basın \${normal_color}[\${wpa3_potpath}]"
-	arr["ARABIC","wpa3_online_attack_11"]="\${normal_color}[\${wpa3_potpath}]\${green_color} لقبول الاقتراح [Enter] فيجب أن تقرر مكان حفظها \${blue_color}.اكتب المسار لتخزين الملف أو اضغط على ،WPA3 بهجوم wifi إذا تم الحصول على كلمة المرور لشبكة\${normal_color}"
-	arr["CHINESE","wpa3_online_attack_11"]="如果 wifi 网络的密码是通过 WPA3 攻击获得的，您应该决定将其保存在何处。 \${green_color}键入存储文件的路径或按 [Enter] 接受默认建议 \${normal_color}[\${wpa3_potpath}]"
-
-	arr["ENGLISH","wpa3_online_attack_12"]="airgeddon. Decrypted password during WPA3 attack"
-	arr["SPANISH","wpa3_online_attack_12"]="airgeddon. Contraseña descifrada en ataque WPA3"
-	arr["FRENCH","wpa3_online_attack_12"]="airgeddon. Mot de passe déchiffré à l'aide de l'attaque WPA3"
-	arr["CATALAN","wpa3_online_attack_12"]="airgeddon. Contrasenya desxifrada amb l'atac WPA3"
-	arr["PORTUGUESE","wpa3_online_attack_12"]="airgeddon. Senha decifrada no ataque WPA3"
-	arr["RUSSIAN","wpa3_online_attack_12"]="airgeddon. Пароль расшифрован во время WPA3 атаки"
-	arr["GREEK","wpa3_online_attack_12"]="airgeddon. Ο κωδικός αποκρυπτογραφήθηκε κατά την επίθεση WPA3"
-	arr["ITALIAN","wpa3_online_attack_12"]="airgeddon. Password decifrata con l'attacco WPA3"
-	arr["POLISH","wpa3_online_attack_12"]="airgeddon. Hasło odszyfrowane w ataku WPA3"
-	arr["GERMAN","wpa3_online_attack_12"]="airgeddon. Passwort während WPA3-Angriff entschlüsselt"
-	arr["TURKISH","wpa3_online_attack_12"]="airgeddon. WPA3 saldırısı sırasında çözülen şifre"
-	arr["ARABIC","wpa3_online_attack_12"]="WPA3 فك تشفير كلمة السر أثناء هجوم .airgeddon"
-	arr["CHINESE","wpa3_online_attack_12"]="airgeddon WPA3 攻击期间解密的密码"
+	arr["ENGLISH","wpa3_online_attack_10"]="To launch this attack, the card must be in \"Monitor\" mode. It has been detected that your card is in \"Monitor\" mode, so airgeddon will automatically change it to be able to carry out the attack"
+	arr["SPANISH","wpa3_online_attack_10"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Monitor\". Se ha detectado que tu tarjeta está en modo \"Monitor\", por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
+	arr["FRENCH","wpa3_online_attack_10"]="Pour lancer cette attaque, la carte doit être en mode \"Monitor\". Il a été détecté que votre carte est en mode \"Monitor\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
+	arr["CATALAN","wpa3_online_attack_10"]="Per llançar aquest atac cal que la targeta estigui en mode \"Monitor\". S'ha detectat que la teva targeta està en mode \"Monitor\", pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
+	arr["PORTUGUESE","wpa3_online_attack_10"]="Para iniciar este ataque, a interface deve estar no modo \"Monitor\". Foi detectado que sua interface está no modo \"Monitor\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
+	arr["RUSSIAN","wpa3_online_attack_10"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Monitor\". Ваша карта находится в режиме \"Monitor\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
+	arr["GREEK","wpa3_online_attack_10"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Monitor\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Monitor\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
+	arr["ITALIAN","wpa3_online_attack_10"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Monitor\". È stato rilevato che la tua scheda è in modalità \"Monitor\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
+	arr["POLISH","wpa3_online_attack_10"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Monitor\". Wykryto, że twoja karta jest w trybie \"Monitor\", więc aby móc przeprowadzić atak, airgeddon automatycznie go zmieni"
+	arr["GERMAN","wpa3_online_attack_10"]="Um diesen Angriff zu starten, muss sich die Karte im \"Monitor\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Monitor\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
+	arr["TURKISH","wpa3_online_attack_10"]="Bu saldırıyı başlatmak için kartın \"Monitor\" modunda olması gerekir. Kartınızın \"Monitor\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
+	arr["ARABIC","wpa3_online_attack_10"]="لبدء هذا الهجوم، يجب أن تكون الشريحتك في وضع \"Monitor\". تم اكتشاف أن شريحتك في وضع \"Monitor\"، لذلك سيقوم airgeddon بتغييرها تلقائيًا لتتمكن من تنفيذ الهجوم"
+	arr["CHINESE","wpa3_online_attack_10"]="要发起此攻击，该卡必须处于“监听”模式。检测到您的卡处于“监听”模式，因此 airgeddon 会自动更改它以能够进行攻击"
 
 	arr["ENGLISH","wpa3_online_attack_13"]="Channel"
 	arr["SPANISH","wpa3_online_attack_13"]="Canal"
@@ -505,20 +475,6 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_online_attack_13"]="Kanal"
 	arr["ARABIC","wpa3_online_attack_13"]="قناة"
 	arr["CHINESE","wpa3_online_attack_13"]="信道"
-
-	arr["ENGLISH","wpa3_online_attack_14"]="WPA3 key decrypted successfully. The password was saved on file [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["SPANISH","wpa3_online_attack_14"]="Clave WPA3 descifrada con éxito. La contraseña se ha guardado en el fichero [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["FRENCH","wpa3_online_attack_14"]="Clé WPA3 déchiffré. Le mot de passe est enregistré dans le fichier [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["CATALAN","wpa3_online_attack_14"]="Clau WPA3 desxifrada amb èxit. La contrasenya s'ha guardat en el fitxer [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["PORTUGUESE","wpa3_online_attack_14"]="A senha da rede WPA3 foi descriptografada com sucesso. A senha foi salva no arquivo [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["RUSSIAN","wpa3_online_attack_14"]="WPA3 ключ успешно расшифрован. Пароль был сохранён в файле [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["GREEK","wpa3_online_attack_14"]="Το κλειδί WPA3 αποκρυπτογραφήθηκε με επιτυχία. Ο κωδικός πρόσβασης αποθηκεύτηκε στο αρχείο [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["ITALIAN","wpa3_online_attack_14"]="Chiave WPA3 decifrata con successo. La password è stata salvata nel file [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["POLISH","wpa3_online_attack_14"]="Klucz WPA3 odszyfrowywany prawidłowo. Hasło zostało zapisane do pliku [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["GERMAN","wpa3_online_attack_14"]="WPA3-Schlüssel erfolgreich entschlüsselt. Das Passwort wurde in der Datei gespeichert [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["TURKISH","wpa3_online_attack_14"]="WPA3 anahtarı başarıyla çözüldü. Şifre dosyaya kaydedildi [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
-	arr["ARABIC","wpa3_online_attack_14"]="[\${normal_color}\${wpa3potenteredpath}\${blue_color}] بنجاحز. تم حفظ كلمة المرور في الملف WPA3 تم فك تشفير مفتاح"
-	arr["CHINESE","wpa3_online_attack_14"]="WPA3 密钥解密成功。密码已保存至文件 [\${normal_color}\${wpa3potenteredpath}\${blue_color}]"
 
 	arr["ENGLISH","wpa3_online_attack_15"]="An old version of aircrack has been detected. To handle WPA3 networks correctly, at least version \${aircrack_wpa3_version} is required. Otherwise, the attack cannot be performed. Please upgrade your aircrack package to a later version"
 	arr["SPANISH","wpa3_online_attack_15"]="Se ha detectado una versión antigua de aircrack. Para manejar redes WPA3 correctamente se requiere como mínimo la versión \${aircrack_wpa3_version}. De lo contrario el ataque no se puede realizar. Actualiza tu paquete de aircrack a una versión posterior"
@@ -536,7 +492,7 @@ function wpa3_dragon_bleed_prehook_hookable_for_languages() {
 }
 
 #Override initialize_menu_and_print_selections function to add the WPA3 menu
-function wpa3_dragon_bleed_override_initialize_menu_and_print_selections() {
+function wpa3_dragon_drain_override_initialize_menu_and_print_selections() {
 
 	debug_print
 
@@ -652,7 +608,7 @@ function wpa3_dragon_bleed_override_initialize_menu_and_print_selections() {
 }
 
 #Override print_hint function to print custom messages related to WPA3 on WPA3 menu
-function wpa3_dragon_bleed_override_print_hint() {
+function wpa3_dragon_drain_override_print_hint() {
 
 	debug_print
 
@@ -790,7 +746,7 @@ function wpa3_dragon_bleed_override_print_hint() {
 }
 
 #Override main_menu function to add the WPA3 attack category
-function wpa3_dragon_bleed_override_main_menu() {
+function wpa3_dragon_drain_override_main_menu() {
 
 	debug_print
 
@@ -872,7 +828,7 @@ function wpa3_dragon_bleed_override_main_menu() {
 }
 
 #Override read_path function to add the WPA3 option
-function wpa3_dragon_bleed_override_read_path() {
+function wpa3_dragon_drain_override_read_path() {
 
 	debug_print
 
@@ -1069,7 +1025,7 @@ function wpa3_dragon_bleed_override_read_path() {
 }
 
 #Override validate_path function to add the WPA3 option
-function wpa3_dragon_bleed_override_validate_path() {
+function wpa3_dragon_drain_override_validate_path() {
 
 	debug_print
 
@@ -1226,7 +1182,7 @@ function wpa3_dragon_bleed_override_validate_path() {
 }
 
 #Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
-function wpa3_dragon_bleed_posthook_clean_tmpfiles() {
+function wpa3_dragon_drain_posthook_clean_tmpfiles() {
 
 	#rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 }
