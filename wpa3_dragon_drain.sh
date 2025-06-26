@@ -7,8 +7,6 @@ plugin_name="WPA3 dragon drain"
 plugin_description="A plugin to perform a WPA3 dragon drain attack"
 plugin_author="Janek"
 
-#This plugin is based in the Wacker script. Credits to the authors: https://github.com/blunderbuss-wctf/wacker
-
 plugin_enabled=1
 
 plugin_minimum_ag_affected_version="11.50"
