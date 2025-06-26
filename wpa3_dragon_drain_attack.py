@@ -7,13 +7,15 @@ import subprocess
 
 # Define the file path to check
 FILE_PATH = "/dragondrain/src/dragondrain"
+# Define the Dragon Drain repo to work with
+DRAGON_DRAIN_REPO = "https://github.com/vanhoefm/dragondrain-and-time"
 
 # Define the commands to run if the file does not exist
 INSTALL_COMMANDS = [
     "apt update",
     "apt install -y autoconf automake libtool shtool libssl-dev pkg-config",
     "rm -rf /dragondrain",
-    "git clone https://github.com/vanhoefm/dragondrain-and-time.git /dragondrain",
+    "git clone " + DRAGON_DRAIN_REPO + " /dragondrain",
     "cd /dragondrain && autoreconf -i",
     "cd /dragondrain && ./autogen.sh",
     "cd /dragondrain && ./configure",
