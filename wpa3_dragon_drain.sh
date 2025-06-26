@@ -202,6 +202,129 @@ function wpa3_dragon_drain_prehook_explore_for_targets_option() {
 	sed -zri 's|"WPA3"\)\n\t{4}#Only WPA3 including WPA2\/WPA3 in Mixed mode\n\t{4}#Not used yet in airgeddon\n\t{4}:|"WPA3"\)\n\t\t\t\t#Only WPA3 including WPA2/WPA3 in Mixed mode\n\t\t\t\tlanguage_strings "${language}" "wpa3_online_attack_4" "yellow"|' "${scriptfolder}${scriptname}" 2> /dev/null
 }
 
+#Override hookable_for_menus function to add the WPA3 menu
+function wpa3_online_attack_override_hookable_for_menus() {
+
+	debug_print
+
+	case ${current_menu} in
+		"wpa3_attacks_menu")
+			print_iface_selected
+			print_all_target_vars
+			return 0
+		;;
+		*)
+			return 1
+		;;
+	esac
+}
+
+#Override hookable_for_hints function to print custom messages related to WPA3 on WPA3 menu
+function wpa3_online_attack_override_hookable_for_hints() {
+
+	debug_print
+
+	declare wpa3_hints=(128 134 437 438 442 445 516 590 626 660 697 699 "wpa3_online_attack_5")
+
+	case "${current_menu}" in
+		"wpa3_attacks_menu")
+			store_array hints wpa3_hints "${wpa3_hints[@]}"
+			hintlength=${#wpa3_hints[@]}
+			((hintlength--))
+			randomhint=$(shuf -i 0-"${hintlength}" -n 1)
+			strtoprint=${hints[wpa3_hints|${randomhint}]}
+		;;
+	esac
+}
+
+#Override main_menu function to add the WPA3 attack category
+function wpa3_dragon_drain_override_main_menu() {
+
+	debug_print
+
+	clear
+	language_strings "${language}" 101 "title"
+	current_menu="main_menu"
+	initialize_menu_and_print_selections
+	echo
+	language_strings "${language}" 47 "green"
+	print_simple_separator
+	language_strings "${language}" 61
+	language_strings "${language}" 48
+	language_strings "${language}" 55
+	language_strings "${language}" 56
+	print_simple_separator
+	language_strings "${language}" 118
+	language_strings "${language}" 119
+	language_strings "${language}" 169
+	language_strings "${language}" 252
+	language_strings "${language}" 333
+	language_strings "${language}" 426
+	language_strings "${language}" 57
+	language_strings "${language}" "wpa3_online_attack_1"
+	print_simple_separator
+	language_strings "${language}" 60
+	language_strings "${language}" 444
+	print_hint
+
+	read -rp "> " main_option
+	case ${main_option} in
+		0)
+			exit_script_option
+		;;
+		1)
+			select_interface
+		;;
+		2)
+			monitor_option "${interface}"
+		;;
+		3)
+			managed_option "${interface}"
+		;;
+		4)
+			dos_attacks_menu
+		;;
+		5)
+			handshake_pmkid_decloaking_tools_menu
+		;;
+		6)
+			decrypt_menu
+		;;
+		7)
+			evil_twin_attacks_menu
+		;;
+		8)
+			wps_attacks_menu
+		;;
+		9)
+			wep_attacks_menu
+		;;
+		10)
+			enterprise_attacks_menu
+		;;
+		11)
+			wpa3_attacks_menu
+		;;
+		12)
+			credits_option
+		;;
+		13)
+			option_menu
+		;;
+		*)
+			invalid_menu_option
+		;;
+	esac
+
+	main_menu
+}
+
+#Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
+function wpa3_dragon_drain_posthook_clean_tmpfiles() {
+
+	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
+}
+
 #Prehook for hookable_for_languages function to modify language strings
 function wpa3_dragon_drain_prehook_hookable_for_languages() {
 
@@ -400,127 +523,4 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_online_attack_15"]="aircrack'in eski bir sürümü tespit edildi. WPA3 ağlarını doğru şekilde yönetmek için en az \${aircrack_wpa3_version} sürümü gereklidir. Aksi takdirde saldırı gerçekleştirilemez. Aircrack paketinizi daha sonraki bir sürüme güncelleyin"
 	arr["ARABIC","wpa3_online_attack_15"]="إلى إصدار أحدث aircrack  بشكل صحيح. قم بتحديث  WPA3  على الأقل, للتعامل مع شبكات ال \${aircrack_wpa3_version}  يلزم توفر الإصدار  .aircrack تم اكتشاف نسخة قديمة من"
 	arr["CHINESE","wpa3_online_attack_15"]="当前aircrack的版本已过期。如果您需要处理 WPA3 加密类型的网络，至少需要版本 \${aircrack_wpa3_version}。否则将无法进行攻击。请尝试将您的aircrack包更新到最高版本"
-}
-
-#Override hookable_for_menus function to add the WPA3 menu
-function wpa3_online_attack_override_hookable_for_menus() {
-
-	debug_print
-
-	case ${current_menu} in
-		"wpa3_attacks_menu")
-			print_iface_selected
-			print_all_target_vars
-			return 0
-		;;
-		*)
-			return 1
-		;;
-	esac
-}
-
-#Override hookable_for_hints function to print custom messages related to WPA3 on WPA3 menu
-function wpa3_online_attack_override_hookable_for_hints() {
-
-	debug_print
-
-	declare wpa3_hints=(128 134 437 438 442 445 516 590 626 660 697 699 "wpa3_online_attack_5")
-
-	case "${current_menu}" in
-		"wpa3_attacks_menu")
-			store_array hints wpa3_hints "${wpa3_hints[@]}"
-			hintlength=${#wpa3_hints[@]}
-			((hintlength--))
-			randomhint=$(shuf -i 0-"${hintlength}" -n 1)
-			strtoprint=${hints[wpa3_hints|${randomhint}]}
-		;;
-	esac
-}
-
-#Override main_menu function to add the WPA3 attack category
-function wpa3_dragon_drain_override_main_menu() {
-
-	debug_print
-
-	clear
-	language_strings "${language}" 101 "title"
-	current_menu="main_menu"
-	initialize_menu_and_print_selections
-	echo
-	language_strings "${language}" 47 "green"
-	print_simple_separator
-	language_strings "${language}" 61
-	language_strings "${language}" 48
-	language_strings "${language}" 55
-	language_strings "${language}" 56
-	print_simple_separator
-	language_strings "${language}" 118
-	language_strings "${language}" 119
-	language_strings "${language}" 169
-	language_strings "${language}" 252
-	language_strings "${language}" 333
-	language_strings "${language}" 426
-	language_strings "${language}" 57
-	language_strings "${language}" "wpa3_online_attack_1"
-	print_simple_separator
-	language_strings "${language}" 60
-	language_strings "${language}" 444
-	print_hint
-
-	read -rp "> " main_option
-	case ${main_option} in
-		0)
-			exit_script_option
-		;;
-		1)
-			select_interface
-		;;
-		2)
-			monitor_option "${interface}"
-		;;
-		3)
-			managed_option "${interface}"
-		;;
-		4)
-			dos_attacks_menu
-		;;
-		5)
-			handshake_pmkid_decloaking_tools_menu
-		;;
-		6)
-			decrypt_menu
-		;;
-		7)
-			evil_twin_attacks_menu
-		;;
-		8)
-			wps_attacks_menu
-		;;
-		9)
-			wep_attacks_menu
-		;;
-		10)
-			enterprise_attacks_menu
-		;;
-		11)
-			wpa3_attacks_menu
-		;;
-		12)
-			credits_option
-		;;
-		13)
-			option_menu
-		;;
-		*)
-			invalid_menu_option
-		;;
-	esac
-
-	main_menu
-}
-
-#Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
-function wpa3_dragon_drain_posthook_clean_tmpfiles() {
-
-	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 }
