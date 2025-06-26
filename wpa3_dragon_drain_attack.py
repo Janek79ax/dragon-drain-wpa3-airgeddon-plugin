@@ -10,7 +10,8 @@ FILE_PATH = "/dragondrain/src/dragondrain"
 
 # Define the commands to run if the file does not exist
 INSTALL_COMMANDS = [
-    "apt-get install -y autoconf automake libtool shtool libssl-dev pkg-config",
+    "apt update",
+    "apt install -y autoconf automake libtool shtool libssl-dev pkg-config",
     "rm -rf /dragondrain",
     "git clone https://github.com/vanhoefm/dragondrain-and-time.git /dragondrain",
     "cd /dragondrain && autoreconf -i",
