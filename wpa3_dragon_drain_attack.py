@@ -14,7 +14,7 @@ DRAGON_DRAIN_REPO = "https://github.com/vanhoefm/dragondrain-and-time"
 INSTALL_COMMANDS = [
     "apt update",
     "apt install -y autoconf automake libtool shtool libssl-dev pkg-config",
-    "rm -rf /dragondrain",
+    "rm -rf /dragondrain 2> /dev/null",
     "git clone " + DRAGON_DRAIN_REPO + " /dragondrain",
     "cd /dragondrain && autoreconf -i",
     "cd /dragondrain && ./autogen.sh",
