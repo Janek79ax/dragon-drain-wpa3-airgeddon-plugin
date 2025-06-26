@@ -13,7 +13,7 @@ plugin_enabled=1
 
 plugin_minimum_ag_affected_version="11.50"
 plugin_maximum_ag_affected_version=""
-plugin_distros_supported=("kali")
+plugin_distros_supported=("Kali", "Kali arm")
 
 #Custom function. Channel mappings to frequency
 function custom_channel_mappings() {
