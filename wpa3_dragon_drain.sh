@@ -18,6 +18,7 @@ function exec_wpa3_dragon_drain_attack() {
 
 	debug_print
 
+	#TODO pending to check if finally this is needed
 	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 	mkdir "${tmpdir}agwpa3" > /dev/null 2>&1
 
@@ -319,6 +320,7 @@ function wpa3_dragon_drain_override_main_menu() {
 	main_menu
 }
 
+#TODO pending to check if finally this hook is needed
 #Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
 function wpa3_dragon_drain_posthook_clean_tmpfiles() {
 
