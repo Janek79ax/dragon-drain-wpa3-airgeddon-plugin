@@ -25,12 +25,12 @@ INSTALL_COMMANDS = [
 
 def check_and_install():
     if not os.path.exists(FILE_PATH):
-        print(f"File {FILE_PATH} not found. Running installation commands...")
+        print(f"Binary file {FILE_PATH} not found. Running installation commands...")
         for command in INSTALL_COMMANDS:
             subprocess.run(command, shell=True, check=True)
 
 def run_final_command(bssid, channel, interface):
-    # Dynamically generate the FINAL_COMMAND string with user-provided arguments
+    # Dynamically generate the final_command string with user-provided arguments
     final_command = f"/dragondrain/src/dragondrain -d {interface} -a {bssid} -c {channel} -b 54 -n 20 -r 200"
     
     print(f"Running final command: {final_command}")
