@@ -25,8 +25,8 @@ function exec_wpa3_dragon_drain_attack() {
 	recalculate_windows_sizes
 
 	#TODO after everything is working, remove -hold from here, only useful to debug errors in this attack as nothing is needed from the attack window but the action itself
-	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
+	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}" "wpa3 dragon drain attack" "active"
+	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}" "wpa3 dragon drain attack"
 }
 
 #Custom function. Validate a WPA3 network
