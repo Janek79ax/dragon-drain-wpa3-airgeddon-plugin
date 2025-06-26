@@ -1,0 +1,12 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Text files and source code
+*.txt text
+*.yml text
+*.sh text
+*.md text
+*.py text
+
+# Binary image formats
+*.png binary
