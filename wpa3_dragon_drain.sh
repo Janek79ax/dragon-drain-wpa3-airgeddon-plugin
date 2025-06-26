@@ -11,7 +11,7 @@ plugin_enabled=1
 
 plugin_minimum_ag_affected_version="11.50"
 plugin_maximum_ag_affected_version=""
-plugin_distros_supported=("Kali", "Kali arm", "Parrot", "Parrot arm", "Debian", "Ubuntu", "Mint", "Backbox", "Raspberry Pi OS", "Raspbian", "Cyborg")
+plugin_distros_supported=("Kali" "Kali arm" "Parrot" "Parrot arm" "Debian" "Ubuntu" "Mint" "Backbox" "Raspberry Pi OS" "Raspbian" "Cyborg")
 
 #Custom function. Execute WPA3 Dragon Drain attack
 function exec_wpa3_dragon_drain_attack() {
