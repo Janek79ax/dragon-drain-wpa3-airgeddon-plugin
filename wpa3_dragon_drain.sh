@@ -21,15 +21,10 @@ function exec_wpa3_dragon_drain_attack() {
 	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 	mkdir "${tmpdir}agwpa3" > /dev/null 2>&1
 
-	if ! hash "${python3}" 2> /dev/null; then
-		#FIXME how to void hardcoding path?
-		python3="/usr/bin/python3"
-	fi
-
 	recalculate_windows_sizes
 
 	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"	
+	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
 }
 
 #Custom function. Validate a WPA3 network
