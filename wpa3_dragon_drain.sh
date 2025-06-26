@@ -13,78 +13,24 @@ plugin_minimum_ag_affected_version="11.50"
 plugin_maximum_ag_affected_version=""
 plugin_distros_supported=("Kali", "Kali arm", "Parrot", "Parrot arm", "Debian", "Ubuntu", "Mint", "Backbox", "Raspberry Pi OS", "Raspbian", "Cyborg")
 
-#Custom function. Channel mappings to frequency
-function custom_channel_mappings() {
-
-	debug_print
-
-	declare -gA channels_to_freq_correspondence
-
-	channels_to_freq_correspondence["1"]="2412"
-	channels_to_freq_correspondence["2"]="2417"
-	channels_to_freq_correspondence["3"]="2422"
-	channels_to_freq_correspondence["4"]="2427"
-	channels_to_freq_correspondence["5"]="2432"
-	channels_to_freq_correspondence["6"]="2437"
-	channels_to_freq_correspondence["7"]="2442"
-	channels_to_freq_correspondence["8"]="2447"
-	channels_to_freq_correspondence["9"]="2452"
-	channels_to_freq_correspondence["10"]="2457"
-	channels_to_freq_correspondence["11"]="2462"
-	channels_to_freq_correspondence["12"]="2467"
-	channels_to_freq_correspondence["13"]="2472"
-	channels_to_freq_correspondence["14"]="2484"
-	channels_to_freq_correspondence["36"]="5180"
-	channels_to_freq_correspondence["40"]="5200"
-	channels_to_freq_correspondence["44"]="5220"
-	channels_to_freq_correspondence["48"]="5240"
-	channels_to_freq_correspondence["52"]="5260"
-	channels_to_freq_correspondence["56"]="5280"
-	channels_to_freq_correspondence["60"]="5300"
-	channels_to_freq_correspondence["64"]="5320"
-	channels_to_freq_correspondence["100"]="5500"
-	channels_to_freq_correspondence["104"]="5520"
-	channels_to_freq_correspondence["108"]="5540"
-	channels_to_freq_correspondence["112"]="5560"
-	channels_to_freq_correspondence["116"]="5580"
-	channels_to_freq_correspondence["120"]="5600"
-	channels_to_freq_correspondence["124"]="5620"
-	channels_to_freq_correspondence["128"]="5640"
-	channels_to_freq_correspondence["132"]="5660"
-	channels_to_freq_correspondence["136"]="5680"
-	channels_to_freq_correspondence["140"]="5700"
-	channels_to_freq_correspondence["144"]="5720"
-	channels_to_freq_correspondence["149"]="5745"
-	channels_to_freq_correspondence["153"]="5765"
-	channels_to_freq_correspondence["157"]="5785"
-	channels_to_freq_correspondence["161"]="5805"
-	channels_to_freq_correspondence["165"]="5825"
-}
-
-
 #Custom function. Execute WPA3 dragon drain attack
 function exec_wpa3_dragon_drain_attack() {
-	#date +%s >> /tmp/deb
-	debug_print
 
-	freq="${channels_to_freq_correspondence[${channel}]}"
+	debug_print
 
 	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 	mkdir "${tmpdir}agwpa3" > /dev/null 2>&1
-	
+
 	if ! hash "${python3}" 2> /dev/null; then
 		#FIXME how to void hardcoding path?
 		python3="/usr/bin/python3"
 	fi
-	
+
 	recalculate_windows_sizes
 
 	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
 	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"	
-
-
 }
-
 
 #Custom function. Validate a WPA3 network
 function validate_wpa3_network() {
@@ -151,7 +97,7 @@ function python3_validation() {
 	return 0
 }
 
-#Custom function. Prepare WPA3 online dictionary attack
+#Custom function. Prepare WPA3 dragon drain attack
 function wpa3_dragon_drain_attack_option() {
 
 	debug_print
@@ -196,11 +142,6 @@ function wpa3_dragon_drain_attack_option() {
 		return 1
 	fi
 
-	wpa3log_file="ag.wpa3.log"
-	#custom_channel_mappings
-
-	#manage_wpa3_log
-
 	echo
 	language_strings "${language}" 32 "green"
 	echo
@@ -208,21 +149,6 @@ function wpa3_dragon_drain_attack_option() {
 	language_strings "${language}" 4 "read"
 
 	exec_wpa3_dragon_drain_attack
-}
-
-#Custom function. Check if the password was captured using wpa3 online dictionary attack and manage to save it on a file
-function manage_wpa3_log() {
-
-	debug_print
-
-	wpa3_potpath="${default_save_path}"
-	wpa3pot_filename="wpa3_password-${essid}.txt"
-	wpa3_potpath="${wpa3_potpath}${wpa3pot_filename}"
-
-	validpath=1
-	while [[ "${validpath}" != "0" ]]; do
-		read_path "wpa3pot"
-	done
 }
 
 #Custom function. Create the WPA3 attacks menu
@@ -242,7 +168,7 @@ function wpa3_attacks_menu() {
 	language_strings "${language}" 55
 	language_strings "${language}" 56
 	language_strings "${language}" 49
-	language_strings "${language}" 50 "separator"	
+	language_strings "${language}" 50 "separator"
 	language_strings "${language}" "wpa3_online_attack_3"
 	print_hint ${current_menu}
 
@@ -282,7 +208,6 @@ function wpa3_dragon_drain_prehook_explore_for_targets_option() {
 }
 
 #Prehook for hookable_for_languages function to modify language strings
-#shellcheck disable=SC1111
 function wpa3_dragon_drain_prehook_hookable_for_languages() {
 
 	arr["ENGLISH",60]="12. About & Credits / Sponsorship mentions"
@@ -818,361 +743,8 @@ function wpa3_dragon_drain_override_main_menu() {
 	main_menu
 }
 
-#Override read_path function to add the WPA3 option
-function wpa3_dragon_drain_override_read_path() {
-
-	debug_print
-
-	echo
-	case ${1} in
-		"wpa3pot")
-			language_strings "${language}" "wpa3_online_attack_11" "blue"
-			read_and_clean_path "wpa3potenteredpath"
-			if [ -z "${wpa3potenteredpath}" ]; then
-				wpa3potenteredpath="${wpa3_potpath}"
-			fi
-			wpa3potenteredpath=$(set_absolute_path "${wpa3potenteredpath}")
-			validate_path "${wpa3potenteredpath}" "${1}"
-		;;
-		"handshake")
-			language_strings "${language}" 148 "green"
-			read_and_clean_path "enteredpath"
-			if [ -z "${enteredpath}" ]; then
-				enteredpath="${handshakepath}"
-			fi
-			enteredpath=$(set_absolute_path "${enteredpath}")
-			validate_path "${enteredpath}" "${1}"
-		;;
-		"cleanhandshake")
-			language_strings "${language}" 154 "green"
-			read_and_clean_path "filetoclean"
-			check_file_exists "${filetoclean}"
-		;;
-		"pmkid")
-			language_strings "${language}" 674 "green"
-			read_and_clean_path "enteredpath"
-			if [ -z "${enteredpath}" ]; then
-				enteredpath="${pmkidpath}"
-			fi
-			enteredpath=$(set_absolute_path "${enteredpath}")
-			validate_path "${enteredpath}" "${1}"
-		;;
-		"pmkidcap")
-			language_strings "${language}" 686 "green"
-			read_and_clean_path "enteredpath"
-			if [ -z "${enteredpath}" ]; then
-				enteredpath="${pmkidcappath}"
-			fi
-			enteredpath=$(set_absolute_path "${enteredpath}")
-			validate_path "${enteredpath}" "${1}"
-		;;
-		"dictionary")
-			language_strings "${language}" 180 "green"
-			read_and_clean_path "DICTIONARY"
-			check_file_exists "${DICTIONARY}"
-		;;
-		"targetfilefordecrypt")
-			language_strings "${language}" 188 "green"
-			read_and_clean_path "enteredpath"
-			check_file_exists "${enteredpath}"
-		;;
-		"targethashcatpmkidfilefordecrypt")
-			language_strings "${language}" 188 "green"
-			read_and_clean_path "hashcatpmkidenteredpath"
-			check_file_exists "${hashcatpmkidenteredpath}"
-		;;
-		"targethashcatenterprisefilefordecrypt")
-			language_strings "${language}" 188 "green"
-			read_and_clean_path "hashcatenterpriseenteredpath"
-			check_file_exists "${hashcatenterpriseenteredpath}"
-		;;
-		"targetjtrenterprisefilefordecrypt")
-			language_strings "${language}" 188 "green"
-			read_and_clean_path "jtrenterpriseenteredpath"
-			check_file_exists "${jtrenterpriseenteredpath}"
-		;;
-		"rules")
-			language_strings "${language}" 242 "green"
-			read_and_clean_path "RULES"
-			check_file_exists "${RULES}"
-		;;
-		"aircrackpot")
-			language_strings "${language}" 441 "green"
-			read_and_clean_path "aircrackpotenteredpath"
-			if [ -z "${aircrackpotenteredpath}" ]; then
-				aircrackpotenteredpath="${aircrack_potpath}"
-			fi
-			aircrackpotenteredpath=$(set_absolute_path "${aircrackpotenteredpath}")
-			validate_path "${aircrackpotenteredpath}" "${1}"
-		;;
-		"jtrpot")
-			language_strings "${language}" 611 "green"
-			read_and_clean_path "jtrpotenteredpath"
-			if [ -z "${jtrpotenteredpath}" ]; then
-				jtrpotenteredpath="${jtr_potpath}"
-			fi
-			jtrpotenteredpath=$(set_absolute_path "${jtrpotenteredpath}")
-			validate_path "${jtrpotenteredpath}" "${1}"
-		;;
-		"hashcatpot")
-			language_strings "${language}" 233 "green"
-			read_and_clean_path "potenteredpath"
-			if [ -z "${potenteredpath}" ]; then
-				potenteredpath="${hashcat_potpath}"
-			fi
-			potenteredpath=$(set_absolute_path "${potenteredpath}")
-			validate_path "${potenteredpath}" "${1}"
-		;;
-		"asleappot")
-			language_strings "${language}" 555 "green"
-			read_and_clean_path "asleapenteredpath"
-			if [ -z "${asleapenteredpath}" ]; then
-				asleapenteredpath="${asleap_potpath}"
-			fi
-			asleapenteredpath=$(set_absolute_path "${asleapenteredpath}")
-			validate_path "${asleapenteredpath}" "${1}"
-		;;
-		"ettercaplog")
-			language_strings "${language}" 303 "green"
-			read_and_clean_path "ettercap_logpath"
-			if [ -z "${ettercap_logpath}" ]; then
-				ettercap_logpath="${default_ettercap_logpath}"
-			fi
-			ettercap_logpath=$(set_absolute_path "${ettercap_logpath}")
-			validate_path "${ettercap_logpath}" "${1}"
-		;;
-		"bettercaplog")
-			language_strings "${language}" 398 "green"
-			read_and_clean_path "bettercap_logpath"
-			if [ -z "${bettercap_logpath}" ]; then
-				bettercap_logpath="${default_bettercap_logpath}"
-			fi
-			bettercap_logpath=$(set_absolute_path "${bettercap_logpath}")
-			validate_path "${bettercap_logpath}" "${1}"
-		;;
-		"ethandshake")
-			language_strings "${language}" 154 "green"
-			read_and_clean_path "et_handshake"
-			check_file_exists "${et_handshake}"
-		;;
-		"writeethandshake")
-			language_strings "${language}" 148 "green"
-			read_and_clean_path "et_handshake"
-			if [ -z "${et_handshake}" ]; then
-				et_handshake="${handshakepath}"
-			fi
-			et_handshake=$(set_absolute_path "${et_handshake}")
-			validate_path "${et_handshake}" "${1}"
-		;;
-		"et_captive_portallog")
-			language_strings "${language}" 317 "blue"
-			read_and_clean_path "et_captive_portal_logpath"
-			if [ -z "${et_captive_portal_logpath}" ]; then
-				et_captive_portal_logpath="${default_et_captive_portal_logpath}"
-			fi
-			et_captive_portal_logpath=$(set_absolute_path "${et_captive_portal_logpath}")
-			validate_path "${et_captive_portal_logpath}" "${1}"
-		;;
-		"wpspot")
-			language_strings "${language}" 123 "blue"
-			read_and_clean_path "wpspotenteredpath"
-			if [ -z "${wpspotenteredpath}" ]; then
-				wpspotenteredpath="${wps_potpath}"
-			fi
-			wpspotenteredpath=$(set_absolute_path "${wpspotenteredpath}")
-			validate_path "${wpspotenteredpath}" "${1}"
-		;;
-		"weppot")
-			language_strings "${language}" 430 "blue"
-			read_and_clean_path "weppotenteredpath"
-			if [ -z "${weppotenteredpath}" ]; then
-				weppotenteredpath="${wep_potpath}"
-			fi
-			weppotenteredpath=$(set_absolute_path "${weppotenteredpath}")
-			validate_path "${weppotenteredpath}" "${1}"
-		;;
-		"enterprisepot")
-			language_strings "${language}" 525 "blue"
-			read_and_clean_path "enterprisepotenteredpath"
-			if [ -z "${enterprisepotenteredpath}" ]; then
-				enterprisepotenteredpath="${enterprise_potpath}"
-			fi
-			enterprisepotenteredpath=$(set_absolute_path "${enterprisepotenteredpath}")
-			validate_path "${enterprisepotenteredpath}" "${1}"
-		;;
-		"certificates")
-			language_strings "${language}" 643 "blue"
-			read_and_clean_path "certificatesenteredpath"
-			if [ -z "${certificatesenteredpath}" ]; then
-				certificatesenteredpath="${enterprisecertspath}"
-			fi
-			certificatesenteredpath=$(set_absolute_path "${certificatesenteredpath}")
-			validate_path "${certificatesenteredpath}" "${1}"
-		;;
-	esac
-
-	validpath="$?"
-	return "${validpath}"
-}
-
-#Override validate_path function to add the WPA3 option
-function wpa3_dragon_drain_override_validate_path() {
-
-	debug_print
-
-	lastcharmanualpath=${1: -1}
-
-	if [[ "${2}" = "enterprisepot" ]] || [[ "${2}" = "certificates" ]]; then
-		dirname=$(dirname "${1}")
-
-		if [ -d "${dirname}" ]; then
-			if ! check_write_permissions "${dirname}"; then
-				language_strings "${language}" 157 "red"
-				return 1
-			fi
-		else
-			if ! dir_permission_check "${1}"; then
-				language_strings "${language}" 526 "red"
-				return 1
-			fi
-		fi
-
-		if [ "${lastcharmanualpath}" != "/" ]; then
-			pathname="${1}/"
-		fi
-	else
-		dirname=${1%/*}
-
-		if [[ ! -d "${dirname}" ]] || [[ "${dirname}" = "." ]]; then
-			language_strings "${language}" 156 "red"
-			return 1
-		fi
-
-		if ! check_write_permissions "${dirname}"; then
-			language_strings "${language}" 157 "red"
-			return 1
-		fi
-	fi
-
-	if [[ "${lastcharmanualpath}" = "/" ]] || [[ -d "${1}" ]] || [[ "${2}" = "enterprisepot" ]] || [[ "${2}" = "certificates" ]]; then
-		if [ "${lastcharmanualpath}" != "/" ]; then
-			pathname="${1}/"
-		else
-			pathname="${1}"
-		fi
-
-		case ${2} in
-			"wpa3pot")
-				suggested_filename="${wpa3pot_filename}"
-				wpa3potenteredpath+="${wpa3pot_filename}"
-			;;
-			"handshake")
-				enteredpath="${pathname}${standardhandshake_filename}"
-				suggested_filename="${standardhandshake_filename}"
-			;;
-			"pmkid")
-				enteredpath="${pathname}${standardpmkid_filename}"
-				suggested_filename="${standardpmkid_filename}"
-			;;
-			"pmkidcap")
-				enteredpath="${pathname}${standardpmkidcap_filename}"
-				suggested_filename="${standardpmkidcap_filename}"
-			;;
-			"aircrackpot")
-				suggested_filename="${aircrackpot_filename}"
-				aircrackpotenteredpath+="${aircrackpot_filename}"
-			;;
-			"jtrpot")
-				suggested_filename="${jtrpot_filename}"
-				jtrpotenteredpath+="${jtrpot_filename}"
-			;;
-			"hashcatpot")
-				suggested_filename="${hashcatpot_filename}"
-				potenteredpath+="${hashcatpot_filename}"
-			;;
-			"asleappot")
-				suggested_filename="${asleappot_filename}"
-				asleapenteredpath+="${asleappot_filename}"
-			;;
-			"ettercaplog")
-				suggested_filename="${default_ettercaplogfilename}"
-				ettercap_logpath="${ettercap_logpath}${default_ettercaplogfilename}"
-			;;
-			"bettercaplog")
-				suggested_filename="${default_bettercaplogfilename}"
-				bettercap_logpath="${bettercap_logpath}${default_bettercaplogfilename}"
-			;;
-			"writeethandshake")
-				et_handshake="${pathname}${standardhandshake_filename}"
-				suggested_filename="${standardhandshake_filename}"
-			;;
-			"et_captive_portallog")
-				suggested_filename="${default_et_captive_portallogfilename}"
-				et_captive_portal_logpath+="${default_et_captive_portallogfilename}"
-			;;
-			"wpspot")
-				suggested_filename="${wpspot_filename}"
-				wpspotenteredpath+="${wpspot_filename}"
-			;;
-			"weppot")
-				suggested_filename="${weppot_filename}"
-				weppotenteredpath+="${weppot_filename}"
-			;;
-			"enterprisepot")
-				enterprise_potpath="${pathname}"
-				enterprise_basepath=$(dirname "${enterprise_potpath}")
-
-				if [ "${enterprise_basepath}" != "." ]; then
-					enterprise_dirname=$(basename "${enterprise_potpath}")
-				fi
-
-				if [ "${enterprise_basepath}" != "/" ]; then
-					enterprise_basepath+="/"
-				fi
-
-				if [ "${enterprise_dirname}" != "${enterprisepot_suggested_dirname}" ]; then
-					enterprise_completepath="${enterprise_potpath}${enterprisepot_suggested_dirname}/"
-				else
-					enterprise_completepath="${enterprise_potpath}"
-					if [ "${enterprise_potpath: -1}" != "/" ]; then
-						enterprise_completepath+="/"
-					fi
-				fi
-
-				echo
-				language_strings "${language}" 158 "yellow"
-				return 0
-			;;
-			"certificates")
-				enterprisecertspath="${pathname}"
-				enterprisecerts_basepath=$(dirname "${enterprisecertspath}")
-
-				if [ "${enterprisecerts_basepath}" != "/" ]; then
-					enterprisecerts_basepath+="/"
-				fi
-
-				enterprisecerts_completepath="${enterprisecertspath}"
-				if [ "${enterprisecertspath: -1}" != "/" ]; then
-					enterprisecerts_completepath+="/"
-				fi
-
-				echo
-				language_strings "${language}" 158 "yellow"
-				return 0
-			;;
-		esac
-
-		echo
-		language_strings "${language}" 155 "yellow"
-		return 0
-	fi
-
-	echo
-	language_strings "${language}" 158 "yellow"
-	return 0
-}
-
 #Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
 function wpa3_dragon_drain_posthook_clean_tmpfiles() {
+
 	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 }
