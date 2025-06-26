@@ -116,13 +116,13 @@ function wpa3_dragon_drain_attack_option() {
 		fi
 	fi
 
-	if check_monitor_enabled "${interface}"; then
+	if ! check_monitor_enabled "${interface}"; then
 		echo
 		language_strings "${language}" "wpa3_online_attack_10" "yellow"
 		echo
 		language_strings "${language}" 115 "read"
 		echo
-		managed_option "${interface}"
+		monitor_option "${interface}"
 	fi
 
 	if ! validate_wpa3_network; then
@@ -482,19 +482,19 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_online_attack_9"]="داخل مجلد المكونات الإضافية \"\${normal_color}wpa_supplicant_binaries\${red_color}\" المطلوب لتنفيذ هذا الهجوم مفقود. الرجاء التأكد من وجود الملف الثنائي وفقًا لبنية المعالج في المجلد wpa_supplicant الملف الثنائي المخصص المترجم مسبقًا لـ"
 	arr["CHINESE","wpa3_online_attack_9"]="执行此攻击所需的预编译自定义 wpa_supplicant 二进制文件丢失。请确保符合您的处理器架构的二进制文件存在于插件目录内的 \"\${normal_color}wpa_supplicant_binaries\${red_color}\" 目录中"
 
-	arr["ENGLISH","wpa3_online_attack_10"]="To launch this attack, the card must be in \"Monitor\" mode. It has been detected that your card is in \"Monitor\" mode, so airgeddon will automatically change it to be able to carry out the attack"
-	arr["SPANISH","wpa3_online_attack_10"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Monitor\". Se ha detectado que tu tarjeta está en modo \"Monitor\", por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
-	arr["FRENCH","wpa3_online_attack_10"]="Pour lancer cette attaque, la carte doit être en mode \"Monitor\". Il a été détecté que votre carte est en mode \"Monitor\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
-	arr["CATALAN","wpa3_online_attack_10"]="Per llançar aquest atac cal que la targeta estigui en mode \"Monitor\". S'ha detectat que la teva targeta està en mode \"Monitor\", pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
-	arr["PORTUGUESE","wpa3_online_attack_10"]="Para iniciar este ataque, a interface deve estar no modo \"Monitor\". Foi detectado que sua interface está no modo \"Monitor\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
-	arr["RUSSIAN","wpa3_online_attack_10"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Monitor\". Ваша карта находится в режиме \"Monitor\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
-	arr["GREEK","wpa3_online_attack_10"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Monitor\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Monitor\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
-	arr["ITALIAN","wpa3_online_attack_10"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Monitor\". È stato rilevato che la tua scheda è in modalità \"Monitor\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
-	arr["POLISH","wpa3_online_attack_10"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Monitor\". Wykryto, że twoja karta jest w trybie \"Monitor\", więc aby móc przeprowadzić atak, airgeddon automatycznie go zmieni"
-	arr["GERMAN","wpa3_online_attack_10"]="Um diesen Angriff zu starten, muss sich die Karte im \"Monitor\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Monitor\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
-	arr["TURKISH","wpa3_online_attack_10"]="Bu saldırıyı başlatmak için kartın \"Monitor\" modunda olması gerekir. Kartınızın \"Monitor\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
+	arr["ENGLISH","wpa3_online_attack_10"]="To launch this attack, the card must be in \"Monitor\" mode. It has been detected that your card is in \"Managed\" mode, so airgeddon will automatically change it to be able to carry out the attack"
+	arr["SPANISH","wpa3_online_attack_10"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Monitor\". Se ha detectado que tu tarjeta está en modo \"Managed\", por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
+	arr["FRENCH","wpa3_online_attack_10"]="Pour lancer cette attaque, la carte doit être en mode \"Monitor\". Il a été détecté que votre carte est en mode \"Managed\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
+	arr["CATALAN","wpa3_online_attack_10"]="Per llançar aquest atac cal que la targeta estigui en mode \"Monitor\". S'ha detectat que la teva targeta està en mode \"Managed\", pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
+	arr["PORTUGUESE","wpa3_online_attack_10"]="Para iniciar este ataque, a interface deve estar no modo \"Monitor\". Foi detectado que sua interface está no modo \"Managed\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
+	arr["RUSSIAN","wpa3_online_attack_10"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Monitor\". Ваша карта находится в режиме \"Managed\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
+	arr["GREEK","wpa3_online_attack_10"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Monitor\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Managed\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
+	arr["ITALIAN","wpa3_online_attack_10"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Monitor\". È stato rilevato che la tua scheda è in modalità \"Managed\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
+	arr["POLISH","wpa3_online_attack_10"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Monitor\". Wykryto, że twoja karta jest w trybie \"Managed\", więc aby móc przeprowadzić atak, airgeddon automatycznie go zmieni"
+	arr["GERMAN","wpa3_online_attack_10"]="Um diesen Angriff zu starten, muss sich die Karte im \"Monitor\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Managed\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
+	arr["TURKISH","wpa3_online_attack_10"]="Bu saldırıyı başlatmak için kartın \"Monitor\" modunda olması gerekir. Kartınızın \"Managed\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
 	arr["ARABIC","wpa3_online_attack_10"]="لبدء هذا الهجوم، يجب أن تكون الشريحتك في وضع \"Monitor\". تم اكتشاف أن شريحتك في وضع \"Monitor\"، لذلك سيقوم airgeddon بتغييرها تلقائيًا لتتمكن من تنفيذ الهجوم"
-	arr["CHINESE","wpa3_online_attack_10"]="要发起此攻击，该卡必须处于“监听”模式。检测到您的卡处于“监听”模式，因此 airgeddon 会自动更改它以能够进行攻击"
+	arr["CHINESE","wpa3_online_attack_10"]="要发起此攻击，该卡必须处于“监听”模式。检测到您的卡处于“管理”模式，因此 airgeddon 会自动更改它以能够进行攻击"
 
 	arr["ENGLISH","wpa3_online_attack_13"]="Channel"
 	arr["SPANISH","wpa3_online_attack_13"]="Canal"
