@@ -74,8 +74,11 @@ function exec_wpa3_dragon_drain_attack() {
 	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 	mkdir "${tmpdir}agwpa3" > /dev/null 2>&1
 	
-	export python3="/usr/bin/python3"
-
+	if ! hash "${python3}" 2> /dev/null; then
+		#FIXME how to void hardcoding path?
+		python3="/usr/bin/python3"
+	fi
+	
 	recalculate_windows_sizes
 
 	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}"
@@ -174,36 +177,26 @@ function wpa3_dragon_drain_attack_option() {
 		fi
 	fi
 
-	#if check_monitor_enabled "${interface}"; then
-	#	echo
-	#	language_strings "${language}" "wpa3_online_attack_10" "yellow"
-	#	echo
-	#	language_strings "${language}" 115 "read"
-	#	echo
-	#	managed_option "${interface}"
-	#fi
+	if check_monitor_enabled "${interface}"; then
+		echo
+		language_strings "${language}" "wpa3_online_attack_10" "yellow"
+		echo
+		language_strings "${language}" 115 "read"
+		echo
+		managed_option "${interface}"
+	fi
 
 	if ! validate_wpa3_network; then
 		return 1
 	fi
 
-	#if ! validate_network_type "personal"; then
-	#	return 1
-	#fi
-
-	#manage_asking_for_dictionary_file
-
-	#if ! python3_validation; then
-	#	return 1
-	#fi
+	if ! python3_validation; then
+		return 1
+	fi
 
 	if ! attack_script_validation; then
 		return 1
 	fi
-
-	#if ! custom_wpa_supplicant_validation; then
-	#	return 1
-	#fi
 
 	wpa3log_file="ag.wpa3.log"
 	#custom_channel_mappings
@@ -1183,6 +1176,5 @@ function wpa3_dragon_drain_override_validate_path() {
 
 #Posthook clean_tmpfiles function to remove temp wpa3 attack files on exit
 function wpa3_dragon_drain_posthook_clean_tmpfiles() {
-
-	#rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
+	rm -rf "${tmpdir}agwpa3"* > /dev/null 2>&1
 }
