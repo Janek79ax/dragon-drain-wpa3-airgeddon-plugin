@@ -119,13 +119,13 @@ function wpa3_dragon_drain_attack_option() {
 		fi
 	fi
 
-	if ! check_monitor_enabled "${interface}"; then
+	if check_monitor_enabled "${interface}"; then
 		echo
 		language_strings "${language}" "wpa3_dragon_drain_attack_9" "yellow"
 		echo
 		language_strings "${language}" 115 "read"
 		echo
-		monitor_option "${interface}"
+		managed_option "${interface}"
 	fi
 
 	if ! validate_wpa3_network; then
@@ -472,19 +472,19 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_dragon_drain_attack_8"]="\"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" موجود وأنه موجود في مجلد المكونات الإضافية بجوار الملف \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" المطلوب كجزء من هذا البرنامج المساعد لتشغيل هذا الهجوم مفقود. يرجى التأكد من أن الملف pyhton3 سكربت"
 	arr["CHINESE","wpa3_dragon_drain_attack_8"]="作为此插件的一部分运行此攻击所需的 python3 脚本丢失。请确保文件 \"\${normal_color}wpa3_dragon_drain_attack.py\${red_color}\" 存在，并且位于 \"\${normal_color}wpa3_dragon_drain_attack.sh\${red_color}\" 旁边的插件目录中 文件"
 
-	arr["ENGLISH","wpa3_dragon_drain_attack_9"]="To launch this attack, the card must be in \"Monitor\" mode. It has been detected that your card is in \"Managed\" mode, so airgeddon will automatically change it to be able to carry out the attack"
-	arr["SPANISH","wpa3_dragon_drain_attack_9"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Monitor\". Se ha detectado que tu tarjeta está en modo \"Managed\", por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
-	arr["FRENCH","wpa3_dragon_drain_attack_9"]="Pour lancer cette attaque, la carte doit être en mode \"Monitor\". Il a été détecté que votre carte est en mode \"Managed\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
-	arr["CATALAN","wpa3_dragon_drain_attack_9"]="Per llançar aquest atac cal que la targeta estigui en mode \"Monitor\". S'ha detectat que la teva targeta està en mode \"Managed\", pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
-	arr["PORTUGUESE","wpa3_dragon_drain_attack_9"]="Para iniciar este ataque, a interface deve estar no modo \"Monitor\". Foi detectado que sua interface está no modo \"Managed\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
-	arr["RUSSIAN","wpa3_dragon_drain_attack_9"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Monitor\". Ваша карта находится в режиме \"Managed\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
-	arr["GREEK","wpa3_dragon_drain_attack_9"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Monitor\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Managed\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
-	arr["ITALIAN","wpa3_dragon_drain_attack_9"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Monitor\". È stato rilevato che la tua scheda è in modalità \"Managed\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
-	arr["POLISH","wpa3_dragon_drain_attack_9"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Monitor\". Wykryto, że twoja karta jest w trybie \"Managed\", więc aby móc przeprowadzić atak, airgeddon automatycznie go zmieni"
-	arr["GERMAN","wpa3_dragon_drain_attack_9"]="Um diesen Angriff zu starten, muss sich die Karte im \"Monitor\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Managed\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
-	arr["TURKISH","wpa3_dragon_drain_attack_9"]="Bu saldırıyı başlatmak için kartın \"Monitor\" modunda olması gerekir. Kartınızın \"Managed\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
-	arr["ARABIC","wpa3_dragon_drain_attack_9"]="لبدء هذا الهجوم، يجب أن تكون الشريحتك في وضع \"Monitor\". تم اكتشاف أن شريحتك في وضع \"Monitor\"، لذلك سيقوم airgeddon بتغييرها تلقائيًا لتتمكن من تنفيذ الهجوم"
-	arr["CHINESE","wpa3_dragon_drain_attack_9"]="要发起此攻击，该卡必须处于“监听”模式。检测到您的卡处于“管理”模式，因此 airgeddon 会自动更改它以能够进行攻击"
+	arr["ENGLISH","wpa3_dragon_drain_attack_9"]="To launch this attack, the card must be in \"Managed\" mode. It has been detected that your card is in \"Monitor\" mode, so airgeddon will automatically change it to be able to carry out the attack"
+	arr["SPANISH","wpa3_dragon_drain_attack_9"]="Para lanzar este ataque es necesario que la tarjeta esté en modo \"Managed\". Se ha detectado que tu tarjeta está en modo \"Monitor\" por lo que airgeddon la cambiará automáticamente para poder realizar el ataque"
+	arr["FRENCH","wpa3_dragon_drain_attack_9"]="Pour lancer cette attaque, la carte doit être en mode \"Managed\". Il a été détecté que votre carte est en mode \"Monitor\", donc airgeddon la changera automatiquement pour pouvoir mener l'attaque"
+	arr["CATALAN","wpa3_dragon_drain_attack_9"]="Per llançar aquest atac cal que la targeta estigui en mode \"Managed\". S'ha detectat que la teva targeta està en mode \"Monitor\" pel que airgeddon la canviarà automàticament per poder realitzar l'atac"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_9"]="Para iniciar este ataque a interface deve estar no modo \"Managed\". Foi detectado que sua interface está no modo \"Monitor\", o airgeddon irá alterá-la automaticamente para poder prosseguir com o ataque"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_9"]="Для запуска этой атаки сетевая карта должна находиться в режиме \"Managed\". Ваша карта находится в режиме \"Monitor\", airgeddon автоматически поменяет режим, чтобы иметь возможность провести атаку"
+	arr["GREEK","wpa3_dragon_drain_attack_9"]="Για να ξεκινήσει αυτή η επίθεση, η κάρτα πρέπει να βρίσκεται σε λειτουργία \"Managed\". Έχει εντοπιστεί ότι η κάρτα σας βρίσκεται σε λειτουργία \"Monitor\", επομένως το airgeddon θα την αλλάξει αυτόματα για να μπορέσει να πραγματοποιήσει την επίθεση"
+	arr["ITALIAN","wpa3_dragon_drain_attack_9"]="Per lanciare questo attacco, la scheda deve essere in modalità \"Managed\". È stato rilevato che la tua scheda è in modalità \"Monitor\", quindi airgeddon la cambierà automaticamente per poter eseguire l'attacco"
+	arr["POLISH","wpa3_dragon_drain_attack_9"]="Aby przeprowadzić ten atak, karta musi być w trybie \"Managed\". Wykryto, że twoja karta jest w trybie \"Monitor\", więc aby móc przeprowadzić atak airgeddon automatycznie go zmieni"
+	arr["GERMAN","wpa3_dragon_drain_attack_9"]="Um diesen Angriff zu starten, muss sich die Karte im \"Managed\"-Modus befinden. Es wurde festgestellt, dass Ihre Karte im \"Monitor\"-Modus ist, also wird airgeddon sie automatisch ändern, um den Angriff ausführen zu können"
+	arr["TURKISH","wpa3_dragon_drain_attack_9"]="Bu saldırıyı başlatmak için kartın \"Managed\" modunda olması gerekir. Kartınızın \"Monitor\" modunda olduğu tespit edildi, bu nedenle airgeddon saldırıyı gerçekleştirebilmek için kartı otomatik olarak değiştirecektir."
+	arr["ARABIC","wpa3_dragon_drain_attack_9"]="تلقائيًا لتتمكن من تنفيذ الهجوم airgeddon لذلك سيغيرها ,\"Monitor\" تم اكتشاف أن شريحتك في وضع .\"Managed\" لبدء هذا الهجوم ، يجب أن تكون الشريحتك في وضع"
+	arr["CHINESE","wpa3_dragon_drain_attack_9"]="要发起此攻击，该卡必须处于“管理”模式。检测到您的卡处于“监听”模式，因此 airgeddon 会自动更改它以能够进行攻击"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_10"]="An old version of aircrack has been detected. To handle WPA3 networks correctly, at least version \${aircrack_wpa3_version} is required. Otherwise, the attack cannot be performed. Please upgrade your aircrack package to a later version"
 	arr["SPANISH","wpa3_dragon_drain_attack_10"]="Se ha detectado una versión antigua de aircrack. Para manejar redes WPA3 correctamente se requiere como mínimo la versión \${aircrack_wpa3_version}. De lo contrario el ataque no se puede realizar. Actualiza tu paquete de aircrack a una versión posterior"
