@@ -39,10 +39,8 @@ This is how it should look like:
  - Thanks to [OscarAkaElvis] for his help in the development of the plugin
 
 ## TODO List
- - Pending to confirmation that tmp dir is not needed
- - Colorization of the attack window
- - Removal of -hold xterm window param after successful testing
  - Do the final review of the language strings by native speaker translators
+ - Test using more wireless adapters
 
 [airgeddon]: https://github.com/v1s1t0r1sh3r3/airgeddon
 [OscarAkaElvis]: https://github.com/OscarAkaElvis
