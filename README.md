@@ -2,14 +2,13 @@
 WPA3 Dragon Drain attack packaged as [airgeddon] plugin
 
 ## How Dragon Drain works
-Dragon Drain attack overflows WPA3 routers by sending heavy requests in large amount to cause DoS (Denial of Service).
+Dragon Drain is a Denial of Service (DoS) technique that overwhelms vulnerable WPA3 access points by flooding them with large numbers of resource-intensive SAE (Simultaneous Authentication of Equals) commit messages. The surge in traffic exhausts the AP’s processing resources, causing legitimate clients to be dropped and preventing new associations. This weakness primarily affects first-generation WPA3 routers and any devices that have not yet been patched against the Dragonblood family of vulnerabilities.
 
 ## What does this plugin do
 This plugin gets Dragon Drain from original GitHub repository, edits, compiles and runs it integrated as a menu option in [airgeddon].
 
 ## Warnings
  - It works only on Debian based Linux distributions. Tested successfully using ALFA AWUS036ACM adapter (Mediatek MT7612U chipset). Pending to be tested using more wireless adapters.
- - It does not re-attempt to compile if something failed in the first go. First compilation could take a while.
  - Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
 
 ## How to install it
@@ -27,7 +26,9 @@ Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depend
 ```
 
 ## How to run it
-Select the WPA3 Dragon Drain attack option from the WPA3 attacks menu in [airgeddon]. Scan to choose the WPA3 target and follow the on-screen instructions to proceed. If you don't have the Dragon Drain binary compiled, the plugin will do it for you. Once launched, the attack will continue indefinitely until you press Ctrl+C or close the attack window, performing a DoS over the target affecting to WPA3 old or non-patched APs/routers.
+Select the WPA3 Dragon Drain attack from the WPA3 attacks menu in [airgeddon]. Scan for available WPA3 targets and choose one to proceed. Follow the on-screen instructions. If the Dragon Drain binary is not already compiled, the plugin will automatically compile it for you.
+
+Once launched, the attack will run indefinitely until you press Ctrl+C or close the attack window. It performs a denial-of-service (DoS) attack against the selected target, primarily affecting outdated or unpatched WPA3 access points and routers.
 
 This is how it should look like:
 
