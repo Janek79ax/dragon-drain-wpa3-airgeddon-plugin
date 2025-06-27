@@ -46,7 +46,7 @@ function validate_wpa3_network() {
 }
 
 #Custom function. Validate if the needed plugin python file exists
-function attack_script_validation() {
+function python3_script_validation() {
 
 	debug_print
 
@@ -136,7 +136,7 @@ function wpa3_dragon_drain_attack_option() {
 		return 1
 	fi
 
-	if ! attack_script_validation; then
+	if ! python3_script_validation; then
 		return 1
 	fi
 
