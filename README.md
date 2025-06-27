@@ -43,6 +43,8 @@ Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depend
 ## How to run it
 Select the WPA3 Dragon Drain attack from the WPA3 attacks menu in [airgeddon]. Scan for available WPA3 targets and choose one to proceed. Follow the on-screen instructions. If the Dragon Drain binary is not already compiled, the plugin will automatically compile it for you.
 
+> ⚠️ **Note:** The first time you run the plugin, an Internet connection is required. The plugin will install the necessary dependencies, download the original Dragon Drain tool from its official repository, and compile it. Once this initial setup is complete, no Internet connection is needed for future uses.
+
 Once launched, the attack will run indefinitely until you press Ctrl+C or close the attack window. It performs a denial-of-service (DoS) attack against the selected target, primarily affecting outdated or unpatched WPA3 access points and routers.
 
 This is how it should look like:
