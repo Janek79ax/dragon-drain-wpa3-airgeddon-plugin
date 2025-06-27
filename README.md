@@ -7,7 +7,7 @@ Dragon Drain is a Denial of Service (DoS) technique that overwhelms vulnerable W
 ## What does this plugin do
 This plugin gets Dragon Drain from original GitHub repository, edits, compiles and runs it integrated as a menu option in [airgeddon].
 
-## Warnings
+## Warnings & Compatibility
 - Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
 - This plugin is designed only for Debian based Linux distributions as the installation/compilation part is using `apt` command.
 - This attack is only compatible with specific wireless adapters, although [VIF] is not required as a capability. The compatibility table is shown below:
