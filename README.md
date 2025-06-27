@@ -27,15 +27,15 @@ Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depend
 ```
 
 ## How to run it
-Select the WPA3 Dragon Drain attack option from the WPA3 attacks menu in [airgeddon]. Scan to choose the WPA3 target and follow the on-screen instructions to proceed. The attack will continue indefinitely until you press Ctrl+C or close the attack window, performing a DoS on the Access Point.
+Select the WPA3 Dragon Drain attack option from the WPA3 attacks menu in [airgeddon]. Scan to choose the WPA3 target and follow the on-screen instructions to proceed. If you don't have the Dragon Drain binary compiled, the plugin will do it for you. Once launched, the attack will continue indefinitely until you press Ctrl+C or close the attack window, performing a DoS over the target affecting to WPA3 old or non-patched APs/routers.
 
 This is how it should look like:
 
  ![attack](dragon.png)
 
 ## Credits
-Thanks to Mathy Vanhoef for discovering the flaw. Original repository: https://github.com/vanhoefm/dragondrain-and-time
-Thanks to OscarAkaElvis for his help in the development of the plugin
+ - Thanks to Mathy Vanhoef for discovering the flaw. Original repository: https://github.com/vanhoefm/dragondrain-and-time
+ - Thanks to [OscarAkaElvis] for his help in the development of the plugin
 
 ## TODO List
  - Pending to confirmation that tmp dir is not needed
@@ -44,3 +44,4 @@ Thanks to OscarAkaElvis for his help in the development of the plugin
  - Do the final review of the language strings by native speaker translators
 
 [airgeddon]: https://github.com/v1s1t0r1sh3r3/airgeddon
+[OscarAkaElvis]: https://github.com/OscarAkaElvis
