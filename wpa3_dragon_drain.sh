@@ -13,6 +13,10 @@ plugin_minimum_ag_affected_version="11.50"
 plugin_maximum_ag_affected_version=""
 plugin_distros_supported=("Kali" "Kali arm" "Parrot" "Parrot arm" "Debian" "Ubuntu" "Mint" "Backbox" "Raspberry Pi OS" "Raspbian" "Cyborg")
 
+dragon_drain_dir="/dragondrain/"
+dragon_drain_binary_path="${dragon_drain_dir}src/dragondrain"
+dragon_drain_repo="https://github.com/vanhoefm/dragondrain-and-time"
+
 #Custom function. Execute WPA3 Dragon Drain attack
 function exec_wpa3_dragon_drain_attack() {
 
@@ -24,8 +28,8 @@ function exec_wpa3_dragon_drain_attack() {
 	recalculate_windows_sizes
 
 	#TODO after everything is working, remove -hold from here, only useful to debug errors in this attack as nothing is needed from the attack window but the action itself
-	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} | tee ${tmpdir}agwpa3/${wpa3log_file} ${colorize}" "wpa3 dragon drain attack" "active"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface}" "wpa3 dragon drain attack"
+	manage_output "-hold +j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_binary_path} | tee ${tmpdir}agwpa3/${wpa3log_file} ${colorize}" "wpa3 dragon drain attack" "active"
+	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_binary_path}" "wpa3 dragon drain attack"
 }
 
 #Custom function. Validate a WPA3 network
@@ -39,6 +43,79 @@ function validate_wpa3_network() {
 		language_strings "${language}" 115 "read"
 		return 1
 	fi
+
+	return 0
+}
+
+#Custom function. Validata if Dragon Drain binary exists
+function dragon_drain_validation() {
+
+	debug_print
+
+	if ! [ -f "${dragon_drain_binary_path}" ]; then
+		echo
+		language_strings "${language}" "wpa3_dragon_drain_attack_11" "yellow"
+		language_strings "${language}" 115 "read"
+		return 1
+	fi
+
+	return 0
+}
+
+#Custom function. Install and compile Dragon Drain binary
+function dragon_drain_installation_and_compilation() {
+
+	debug_print
+
+	local update_output=""
+	local resultok=1
+
+	if ! update_output=$(apt update 2>&1); then
+		resultok=0
+	else
+		if ! update_output+=$(apt -y install autoconf automake libtool shtool libssl-dev pkg-config git 2>&1); then
+			resultok=0
+		fi
+	fi
+
+	if [ ${resultok} -eq 1 ]; then
+		echo
+		language_strings "${language}" "wpa3_dragon_drain_attack_15" "yellow"
+		language_strings "${language}" 115 "read"
+
+		echo
+		rm -rf "${dragon_drain_dir}" 2> /dev/null
+		git clone "${dragon_drain_repo}" "${dragon_drain_dir}"
+		cd "${dragon_drain_dir}" && autoreconf -i
+		./autogen.sh
+		./configure
+		sed -i '42s/ __packed//' "${dragon_drain_dir}src/aircrack-osdep/radiotap/radiotap.h"
+		make
+		compilation_result=$?
+
+		if [ "${compilation_result}" -ne 0 ]; then
+			chmod +x "${dragon_drain_binary_path}" 2> /dev/null
+			echo
+			language_strings "${language}" "wpa3_dragon_drain_attack_16" "red"
+			language_strings "${language}" 115 "read"
+			return 1
+		fi
+	else
+		echo
+		language_strings "${language}" "wpa3_dragon_drain_attack_12" "red"
+
+		ask_yesno "wpa3_dragon_drain_attack_13" "yes"
+		if [ "${yesno}" = "y" ]; then
+			echo "${update_output}"
+			echo
+			language_strings "${language}" 115 "read"
+		fi
+
+		return 1
+	fi
+
+	echo
+	language_strings "${language}" "wpa3_dragon_drain_attack_14" "blue"
 
 	return 0
 }
@@ -136,6 +213,12 @@ function wpa3_dragon_drain_attack_option() {
 
 	if ! python3_script_validation; then
 		return 1
+	fi
+
+	if ! dragon_drain_validation; then
+		if ! dragon_drain_installation_and_compilation; then
+			return 1
+		fi
 	fi
 
 	wpa3log_file="ag.wpa3.log"
@@ -498,4 +581,88 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_dragon_drain_attack_10"]="aircrack'in eski bir sürümü tespit edildi. WPA3 ağlarını doğru şekilde yönetmek için en az \${aircrack_wpa3_version} sürümü gereklidir. Aksi takdirde saldırı gerçekleştirilemez. Aircrack paketinizi daha sonraki bir sürüme güncelleyin"
 	arr["ARABIC","wpa3_dragon_drain_attack_10"]="إلى إصدار أحدث aircrack بشكل صحيح. قم بتحديث WPA3 على الأقل, للتعامل مع شبكات ال \${aircrack_wpa3_version} يلزم توفر الإصدار .aircrack تم اكتشاف نسخة قديمة من"
 	arr["CHINESE","wpa3_dragon_drain_attack_10"]="当前aircrack的版本已过期。如果您需要处理 WPA3 加密类型的网络，至少需要版本 \${aircrack_wpa3_version}。否则将无法进行攻击。请尝试将您的aircrack包更新到最高版本"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_11"]="The compiled Dragon Drain binary was not found in the expected location \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". It will now be installed and compiled. The process will begin with the installation of the necessary dependencies"
+	arr["SPANISH","wpa3_dragon_drain_attack_11"]="No se encuentra el binario de Dragon Drain compilado en la ubicación esperada \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Se procederá a instalarlo y compilarlo. Primero se comenzará por instalar las dependencias necesarias"
+	arr["FRENCH","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Le binaire Dragon Drain n'est pas compilé dans l'emplacement attendu \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Il procèdera à l'installer et à le compiler. Il commencera d'abord par installer les unités nécessaires"
+	arr["CATALAN","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} El binari de drac de drac no es recopila a la ubicació esperada \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Procedirà a instal·lar -lo i compilar-lo. Primer començarà instal·lant les dependències necessàries"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} O binário de drenagem do dragão não é compilado no local esperado \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Ele continuará a instalar e compilá-lo. Primeiro, começará instalando as dependências necessárias"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Двоирный двоичный дренаж Dragon не составлен в ожидаемом месте \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Он продолжит установить и компилировать его. Сначала начнется с установки необходимых единиц"
+	arr["GREEK","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Το δυαδικό δυαδικό Dragon Drain δεν καταρτίζεται στην αναμενόμενη θέση \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Θα προχωρήσει στην εγκατάσταση και την συντήρηση του. Πρώτα θα ξεκινήσει με την εγκατάσταση των απαραίτητων μονάδων"
+	arr["ITALIAN","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Il binario Dragon Drain non è compilato nella posizione prevista \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Procederà per installarlo e compilare. Innanzitutto inizierà installando le dipendenze necessarie"
+	arr["POLISH","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Binarny Dragon Drain nie jest kompilowany w oczekiwanej lokalizacji \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Przejdzie do instalacji i skompilowania. Najpierw zacznie się od zainstalowania niezbędnych jednostek"
+	arr["GERMAN","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Der Dragon Drain Binary wird nicht an dem erwarteten Ort zusammengestellt \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Es wird es installieren und kompilieren. Zuerst beginnt es mit der Installation der erforderlichen Einheiten"
+	arr["TURKISH","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} Dragon Drain İkili, beklenen yerde derlenmez \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Kurulmaya ve derlemeye devam edecek. Önce gerekli birimleri kurarak başlayacak"
+	arr["ARABIC","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} لا يتم تجميع ثنائي Dragon Drain في الموقع المتوقع \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". سوف يمتد لتثبيت وتجميعه. أولاً ، سيبدأ بتثبيت الوحدات اللازمة"
+	arr["CHINESE","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} 龙流量二进制不会在预期位置“\${normal_color}\${dragon_drain_binary_path}\${yellow_color}”。它将继续安装和编译。首先，它将开始安装必要的单元"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_12"]="An error occurred while installing the dependencies. Check your Internet connection or if there is any problem on your system"
+	arr["SPANISH","wpa3_dragon_drain_attack_12"]="Ocurrió un error instalando las dependencias. Revisa tu conexión a Internet o si existe algún problema en tu sistema"
+	arr["FRENCH","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Une erreur s'est produite en installant les dependencies. Vérifiez votre connexion Internet ou s'il y a un problème dans votre système"
+	arr["CATALAN","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} S'ha produït un error mitjançant la instal·lació de les dependencies. Comproveu la vostra connexió a Internet o si hi ha algun problema al vostre sistema"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Ocorreu um erro instalando as dependencies. Verifique sua conexão com a Internet ou se houver algum problema em seu sistema"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Ошибка произошла путем установки единиц. Проверьте подключение к Интернету или если есть какие -либо проблемы в вашей системе"
+	arr["GREEK","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Ένα λάθος συνέβη με την εγκατάσταση των μονάδων. Ελέγξτε τη σύνδεσή σας στο Διαδίκτυο ή εάν υπάρχει κάποιο πρόβλημα στο σύστημά σας"
+	arr["ITALIAN","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Si è verificato un errore installando le unità. Controlla la tua connessione Internet o se c'è qualche problema nel sistema"
+	arr["POLISH","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Wystąpił błąd przez instalowanie jednostek. Sprawdź połączenie internetowe lub jeśli jest jakikolwiek problem w twoim systemie"
+	arr["GERMAN","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Ein Fehler trat durch die Installation der Einheiten auf. Überprüfen Sie Ihre Internetverbindung oder wenn in Ihrem System ein Problem vorliegt"
+	arr["TURKISH","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Birimlerin kurulmasıyla bir hata oluştu. İnternet bağlantınızı kontrol edin veya sisteminizde herhangi bir sorun varsa"
+	arr["ARABIC","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} حدث خطأ عن طريق تثبيت الوحدات. تحقق من اتصال الإنترنت الخاص بك أو إذا كان هناك أي مشكلة في نظامك"
+	arr["CHINESE","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} 通过安装单元发生了一个错误。检查您的Internet连接或系统中是否有任何问题"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_13"]="Do you want to see the output of the error occurred while updating/installing? \${blue_color}Maybe this way you might find the root cause of the problem \${normal_color}\${visual_choice}"
+	arr["SPANISH","wpa3_dragon_drain_attack_13"]="¿Quieres ver la salida del error que dio al actualizar/instalar? \${blue_color}De esta manera puede que averigües cuál fue el origen del problema \${normal_color}\${visual_choice}"
+	arr["FRENCH","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Voulez-vous voir le résultat de l'erreur survenue lors de l'actualisation/installation?? \${blue_color}Peut-être de cette façon vous pourriez trouver la cause principale du problème \${normal_color}\${visual_choice}"
+	arr["CATALAN","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Voleu veure la sortida de l'error que heu donat en actualitzar/instal·lar? \${blue_color}Potser així trobareu la causa principal del problema \${normal_color}\${visual_choice}"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Deseja ver o erro ocorrido durante a atualização/instalação? \${blue_color}Talvez assim você possa encontrar a causa raiz do problema \${normal_color}\${visual_choice}"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Вы хотите увидеть вывод выдающейся вами ошибки при обновлении/установке? \${blue_color}Возможно, таким образом Вам удастся установить причину проблемы \${normal_color}\${visual_choice}"
+	arr["GREEK","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Θέλετε να δείτε την έξοδο του σφάλματος που δώσατε κατά την ενημέρωση/εγκατάσταση; \${blue_color}Ίσως με αυτόν τον τρόπο να βρείτε τη βασική αιτία του προβλήματος \${normal_color}\${visual_choice}"
+	arr["ITALIAN","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Vuoi vedere l'output dell'errore che si è verificato durante l'aggiornamento/installazione? \${blue_color}Forse in questo modo potresti scoprire la causa del problema \${normal_color}\${visual_choice}"
+	arr["POLISH","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Czy chcesz zobaczyć dane wyjściowe błędu, który wystąpił podczas aktualizacji/instalacji? \${blue_color}Możesz w ten sposób możesz znaleźć przyczynę problemu \${normal_color}\${visual_choice}"
+	arr["GERMAN","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Möchten Sie die Ausgabe des Fehlers sehen, der beim Aktualisierung/Installation aufgetreten ist? \${blue_color}Vielleicht finden Sie auf dieser Weise die Ursache des Problems \${normal_color}\${visual_choice}"
+	arr["TURKISH","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} Güncelleme/yükleme sırasında oluşan hatanın çıktısını görmek ister misiniz? \${blue_color}Belki bu şekilde sorununun temel nedenini bulabilirsiniz \${normal_color}\${visual_choice}"
+	arr["ARABIC","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} \${normal_color}\${visual_choice} \${blue_color}ربما بهذه الطريقة قد تجد السبب الاساسي للمشكلة \${green_color}هل تريد رؤية إخراج الخطأ الذي قدمته عند التحديث/التثبيت؟"
+	arr["CHINESE","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} 您是否想查看更新/安装时给出的错误的输出？\${blue_color}也许这样你可能会找到问题的根本原因 \${normal_color}\${visual_choice}"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_14"]="Dragon Drain has been compiled and installed successfully. It is now possible to proceed with launching the attack..."
+	arr["SPANISH","wpa3_dragon_drain_attack_14"]="Se ha compilado e instalado exitosamente Dragon Drain. Ahora se puede continuar para lanzar el ataque..."
+	arr["FRENCH","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain a été compilé et installé. Vous pouvez maintenant continuer à lancer l'attaque..."
+	arr["CATALAN","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain s’ha compilat i instal·lat. Ara podeu continuar llançant l'atac..."
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} O Dragon Drain foi compilado e instalado. Agora você pode continuar lançando o ataque..."
+	arr["RUSSIAN","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Дренаж дракона был скомпилирован и установлен. Теперь вы можете продолжать запускать атаку..."
+	arr["GREEK","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Το Dragon Drain έχει καταρτιστεί και εγκατασταθεί. Τώρα μπορείτε να συνεχίσετε να ξεκινάτε την επίθεση..."
+	arr["ITALIAN","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain è stato compilato e installato. Ora puoi continuare a lanciare l'attacco..."
+	arr["POLISH","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain został skompilowany i zainstalowany. Teraz możesz kontynuować atak..."
+	arr["GERMAN","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain wurde zusammengestellt und installiert. Jetzt können Sie den Angriff weiter starten..."
+	arr["TURKISH","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} Dragon Drain derlendi ve kuruldu. Şimdi saldırıyı başlatmaya devam edebilirsiniz..."
+	arr["ARABIC","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} تم تجميع وتثبيت Dragon Drain. الآن يمكنك الاستمرار في شن الهجوم ..."
+	arr["CHINESE","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} 龙流量已被编译和安装。现在您可以继续发动攻击..."
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_15"]="The necessary dependencies are already installed. Now, the application needs to be downloaded and compiled. The entire process will be displayed on screen, as it may be useful in case of an error. This may take a few minutes. Please be patient and do not interrupt the process"
+	arr["SPANISH","wpa3_dragon_drain_attack_15"]="Ya están instaladas las dependencias necesarias. Ahora falta descargar la aplicación y compilarla. Se mostrará por pantalla todo el proceso ya que puede ser útil en caso de error. Es posible que tome algunos minutos, por favor tenga paciencia y no interrumpa el proceso"
+	arr["FRENCH","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Les unités nécessaires sont déjà installées. Vous devez maintenant télécharger l'application et la compiler. L'ensemble du processus sera affiché à l'écran car il peut être utile en cas d'erreur. Vous pouvez prendre quelques minutes, soyez patient et n'interrompez pas le processus"
+	arr["CATALAN","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Les unitats necessàries ja estan instal·lades. Ara heu de descarregar l’aplicació i compilar -la. Tot el procés es mostrarà a la pantalla ja que pot ser útil en cas d’error. Podeu trigar uns minuts, tingueu paciència i no interrompeu el procés"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} As unidades necessárias já estão instaladas. Agora você precisa baixar o aplicativo e compilá -lo. Todo o processo será mostrado na tela, pois pode ser útil em caso de erro. Você pode levar alguns minutos, por favor, seja paciente e não interrompa o processo"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Необходимые единицы уже установлены. Теперь вам нужно скачать приложение и составить его. Весь процесс будет показан на экране, так как он может быть полезен в случае ошибки. Вы можете занять несколько минут, будьте терпеливы и не прерывайте процесс"
+	arr["GREEK","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Οι απαραίτητες μονάδες έχουν ήδη εγκατασταθεί. Τώρα πρέπει να κατεβάσετε την εφαρμογή και να την καταρτίσετε. Ολόκληρη η διαδικασία θα εμφανιστεί στην οθόνη, καθώς μπορεί να είναι χρήσιμη σε περίπτωση σφάλματος. Μπορείτε να διαρκέσετε λίγα λεπτά, παρακαλούμε να είστε υπομονετικοί και να μην διακόψετε τη διαδικασία"
+	arr["ITALIAN","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Le unità necessarie sono già installate. Ora devi scaricare l'applicazione e compilarla. L'intero processo verrà mostrato sullo schermo poiché può essere utile in caso di errore. Puoi richiedere qualche minuto, si prega di essere paziente e non interrompere il processo"
+	arr["POLISH","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Niezbędne jednostki są już zainstalowane. Teraz musisz pobrać aplikację i skompilować ją. Cały proces zostanie wyświetlony na ekranie, ponieważ może być przydatny w przypadku błędu. Możesz poświęcić kilka minut, prosimy o cierpliwość i nie przerywać procesu"
+	arr["GERMAN","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Die erforderlichen Einheiten sind bereits installiert. Jetzt müssen Sie die Anwendung herunterladen und kompilieren. Der gesamte Vorgang wird auf dem Bildschirm angezeigt, da er bei Fehlern nützlich sein kann. Sie können ein paar Minuten dauern, bitte geduldig sein und den Prozess nicht unterbrechen"
+	arr["TURKISH","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} Gerekli birimler zaten kuruldu. Şimdi uygulamayı indirmeniz ve derlemeniz gerekiyor. Hata durumunda yararlı olabileceğinden tüm işlem ekranda gösterilecektir. Birkaç dakika alabilir, lütfen sabırlı olun ve süreci kesmeyin"
+	arr["ARABIC","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} تم تثبيت الوحدات اللازمة بالفعل. تحتاج الآن إلى تنزيل التطبيق وتجميعه. سيتم عرض العملية بأكملها على الشاشة لأنها يمكن أن تكون مفيدة في حالة الخطأ. قد تأخذ بضع دقائق ، يرجى التحلي بالصبر وعدم مقاطعة العملية"
+	arr["CHINESE","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} 必要的单元已经安装。现在，您需要下载该应用程序并进行编译。整个过程将在屏幕上显示，因为在错误的情况下可能很有用。您可能需要几分钟，请耐心等待，不要中断该过程"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_16"]="There has been some problem in the installation and compilation process. Please check the messages on the screen and solve the problem. The attack cannot be launched"
+	arr["SPANISH","wpa3_dragon_drain_attack_16"]="Ha habido algún problema en el proceso de instalación y compilación. Por favor revisa los mensajes por pantalla y soluciona el problema. El ataque no se puede lanzar"
+	arr["FRENCH","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Il y a eu un problème dans le processus d'installation et de compilation. Veuillez vérifier les messages à l'écran et résoudre le problème. L'attaque ne peut pas être lancée"
+	arr["CATALAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Hi ha hagut algun problema en el procés d’instal·lació i recopilació. Comproveu els missatges de la pantalla i solucioneu el problema. L’atac no es pot llançar"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Houve algum problema no processo de instalação e compilação. Verifique as mensagens na tela e resolva o problema. O ataque não pode ser lançado"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Была некоторая проблема в процессе установки и компиляции. Пожалуйста, проверьте сообщения на экране и решите проблему. Атака не может быть запущена"
+	arr["GREEK","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Υπήρξε κάποιο πρόβλημα στη διαδικασία εγκατάστασης και συλλογής. Ελέγξτε τα μηνύματα στην οθόνη και λύστε το πρόβλημα. Η επίθεση δεν μπορεί να ξεκινήσει"
+	arr["ITALIAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} C'è stato qualche problema nel processo di installazione e compilazione. Si prega di controllare i messaggi sullo schermo e risolvere il problema. L'attacco non può essere lanciato"
+	arr["POLISH","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} W procesie instalacji i kompilacji wystąpił jakiś problem. Sprawdź wiadomości na ekranie i rozwiązaj problem. Ataku nie można wystrzelić"
+	arr["GERMAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Das Installations- und Kompilierungsprozess gab es ein Problem. Bitte überprüfen Sie die Nachrichten auf dem Bildschirm und lösen Sie das Problem. Der Angriff kann nicht gestartet werden"
+	arr["TURKISH","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Kurulum ve derleme sürecinde bazı sorunlar olmuştur. Lütfen ekrandaki mesajları kontrol edin ve sorunu çözün. Saldırı başlatılamaz"
+	arr["ARABIC","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} كانت هناك مشكلة في عملية التثبيت والتجميع. يرجى التحقق من الرسائل الموجودة على الشاشة وحل المشكلة. لا يمكن شن الهجوم"
+	arr["CHINESE","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} 安装和编译过程中存在一些问题。请检查屏幕上的消息并解决问题。攻击无法发动"
 }
