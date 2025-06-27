@@ -8,8 +8,23 @@ Dragon Drain is a Denial of Service (DoS) technique that overwhelms vulnerable W
 This plugin gets Dragon Drain from original GitHub repository, edits, compiles and runs it integrated as a menu option in [airgeddon].
 
 ## Warnings
- - It works only on Debian based Linux distributions. Tested successfully using ALFA AWUS036ACM adapter (Mediatek MT7612U chipset). Pending to be tested using more wireless adapters.
- - Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
+- Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
+- This plugin is designed only for Debian based Linux distributions as the installation/compilation part is using `apt` command.
+- This attack is only compatible with specific wireless adapters, although [VIF] is not required as a capability. The compatibility table is shown below:
+
+| Wireless adapter | Chipset            | Testing results |
+|:-----------------|:-------------------|:----------------|
+| Alfa AWUS036ACM  | MediaTek MT7612U   | ✅ Positive      |
+| Alfa AWUS036NHA  | Atheros AR9271     | ✅ Positive      |
+| Alfa AWUS036AXM  | Mediatek MT7921AUN | ❌ Negative      |
+| Alfa AWUS036AXML | Mediatek MT7921AUN | ❌ Negative      |
+| Alfa AWUS036NH   | Ralink RT3070      | ✅ Positive      |
+| Alfa AWUS052NHS  | Ralink RT3572      | ✅ Positive      |
+| Fenvi AX1800     | Mediatek MT7921U   | ❌ Negative      |
+| Alfa AWUS036ACS  | Realtek RTL8811AU  | ✅ Positive      |
+| Alfa AWUS036ACH  | Realtek RTL8812AU  | ✅ Positive      |
+
+Tested successfully using ALFA AWUS036ACM adapter (Mediatek MT7612U chipset). Pending to be tested using more wireless adapters.
 
 ## How to install it
 Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depending on your Linux distribution it can be in different directories. Usually is at `/usr/share/airgeddon` or maybe in another location where you did the git clone command. 
@@ -43,4 +58,5 @@ This is how it should look like:
  - Test using more wireless adapters
 
 [airgeddon]: https://github.com/v1s1t0r1sh3r3/airgeddon
+[VIF]: https://github.com/v1s1t0r1sh3r3/airgeddon/wiki/FAQ%20&%20Troubleshooting#what-is-vif
 [OscarAkaElvis]: https://github.com/OscarAkaElvis
