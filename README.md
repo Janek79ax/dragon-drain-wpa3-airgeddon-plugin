@@ -24,7 +24,7 @@ This plugin gets Dragon Drain from original GitHub repository, edits, compiles a
 | Alfa AWUS036ACS  | Realtek RTL8811AU  | ✅ Positive      |
 | Alfa AWUS036ACH  | Realtek RTL8812AU  | ✅ Positive      |
 
-Tested successfully using ALFA AWUS036ACM adapter (Mediatek MT7612U chipset). Pending to be tested using more wireless adapters.
+Pending to be tested using more wireless adapters.
 
 ## How to install it
 Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depending on your Linux distribution it can be in different directories. Usually is at `/usr/share/airgeddon` or maybe in another location where you did the git clone command. 
