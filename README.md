@@ -23,6 +23,7 @@ This plugin gets Dragon Drain from original GitHub repository, edits, compiles a
 | Fenvi AX1800     | Mediatek MT7921U   | ❌ Negative      |
 | Alfa AWUS036ACS  | Realtek RTL8811AU  | ✅ Positive      |
 | Alfa AWUS036ACH  | Realtek RTL8812AU  | ✅ Positive      |
+| Alfa AWUS036AC   | Realtek RTL8812AU  | ✅ Positive      |
 
 Pending to be tested using more wireless adapters.
 
