@@ -40,11 +40,11 @@ This is how it should look like:
 ## Credits
  - Thanks to Mathy Vanhoef for discovering the flaw. Original repository: https://github.com/vanhoefm/dragondrain-and-time
  - Thanks to [OscarAkaElvis] for his help in the development of the plugin
+ - Thanks to [xpz3] for the research to adapt the original attack to work on all chipsets
 
 ## TODO List
  - Do the final review of the language strings by native speaker translators
- - Test using more wireless adapters
 
 [airgeddon]: https://github.com/v1s1t0r1sh3r3/airgeddon
-[VIF]: https://github.com/v1s1t0r1sh3r3/airgeddon/wiki/FAQ%20&%20Troubleshooting#what-is-vif
 [OscarAkaElvis]: https://github.com/OscarAkaElvis
+[xpz3]: https://github.com/xpz3
