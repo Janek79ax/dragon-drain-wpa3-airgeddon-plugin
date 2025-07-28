@@ -10,7 +10,7 @@ This plugin retrieves Dragon Drain from the original GitHub repository, installs
 ## Warnings & Compatibility
 - Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
 - This plugin is designed only for Debian based Linux distributions as the installation/compilation part is using `apt` command.
-- The original attack is only compatible with specific wireless adapters (mostly Atheros), but this version has been modified to work with all chipsets.
+- The original attack is only compatible with specific wireless adapters (mostly Atheros), but this version has been modified to work with all chipsets adjusting bitrate based on chipset for better reliability.
 
 ## How to install it
 Deploy the `.sh` and the `.py` files inside your airgeddon's plugins dir. Depending on your Linux distribution it can be in different directories. Usually is at `/usr/share/airgeddon` or maybe in another location where you did the git clone command. 
