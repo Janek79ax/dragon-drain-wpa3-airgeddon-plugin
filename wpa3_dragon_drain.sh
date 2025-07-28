@@ -379,6 +379,8 @@ function wpa3_dragon_drain_attack_option() {
 	wpa3log_file="ag.wpa3.log"
 
 	if is_atheros_chipset || is_realtek_chipset || is_ralink_chipset; then
+		echo
+		language_strings "${language}" "wpa3_dragon_drain_attack_23" "blue"
 		adjust_bitrate
 	fi
 
@@ -972,4 +974,18 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Bağımlılıkları kontrol etmeye gerek yok. Daha önce kontrol edildi"
 	arr["ARABIC","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} لا حاجة للتحقق من التبعيات. تم فحصهم من قبل"
 	arr["CHINESE","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} 无需检查依赖项。他们之前已检查"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_23"]="Bitrate adjustment supported by your chipset. Adjusting it to improve reliability..."
+	arr["SPANISH","wpa3_dragon_drain_attack_23"]="Ajuste de bitrate compatible con tu chipset. Ajustaando para mejorar el rendimiento..."
+	arr["FRENCH","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Réglage du bitrate pris en charge par votre chipset. L'ajuster pour améliorer la fiabilité..."
+	arr["CATALAN","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Ajust de bitrate suportat pel vostre chipset. Ajustant-lo per millorar la fiabilitat..."
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Ajuste de bitrate suportado pelo seu chipset. Ajustando-o para melhorar a confiabilidade..."
+	arr["RUSSIAN","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Регулировка bitrate поддерживается вашим чипсетом. Регулирование его для повышения надежности..."
+	arr["GREEK","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Ρύθμιση bitrate που υποστηρίζεται από το chipset σας. Ρυθμίζοντας το για βελτίωση της αξιοπιστίας..."
+	arr["ITALIAN","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Regolazione bitrate supportata dal tuo chipset. Regolandolo per migliorare l'affidabilità..."
+	arr["POLISH","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Regulacja bitrate obsługiwana przez chipset. Dostosowanie go w celu poprawy niezawodności..."
+	arr["GERMAN","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Die von Ihrem Chipsatz unterstützte bitrate-Einstellung. Anpassen, um die Zuverlässigkeit zu verbessern..."
+	arr["TURKISH","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Yonga setiniz tarafından desteklenen bitrate ayarı. Güvenilirliği artırmak için ayarlamak..."
+	arr["ARABIC","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} ...تعديل bitrate المدعوم من مجموعة الشرائح الخاصة بك. ضبطه لتحسين الموثوقية"
+	arr["CHINESE","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} 芯片组支持的 bitrate 调整。调整它以提高可靠性..."
 }
