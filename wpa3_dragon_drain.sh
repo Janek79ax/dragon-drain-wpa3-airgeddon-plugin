@@ -369,6 +369,10 @@ function wpa3_dragon_drain_attack_option() {
 	cd "${scriptfolder}"
 	wpa3log_file="ag.wpa3.log"
 
+	if is_atheros_chipset || is_realtek_chipset || is_ralink_chipset; then
+		adjust_bitrate
+	fi
+
 	echo
 	language_strings "${language}" 32 "green"
 	echo
@@ -378,12 +382,63 @@ function wpa3_dragon_drain_attack_option() {
 	exec_wpa3_dragon_drain_attack
 }
 
+#Custom function. Adjust bitrate based on some chipsets to improve reliability
+function adjust_bitrate() {
+
+	debug_print
+
+	local bitrate_band
+	bitrate_band="2.4"
+
+	if [[ -n "${channel}" ]] && [[ "${channel}" -gt 14 ]]; then
+		bitrate_band="5"
+	fi
+
+	ip link set "${interface}" down > /dev/null 2>&1
+	iw "${interface}" set type managed > /dev/null 2>&1
+	ip link set "${interface}" up > /dev/null 2>&1
+	sleep 1
+
+	if ! iw "${interface}" set bitrates legacy-"${bitrate_band}" 54; then
+		echo
+		echo "Chipset: ${chipset}"
+	fi
+
+	ip link set "${interface}" down > /dev/null 2>&1
+	iw "${interface}" set monitor control > /dev/null 2>&1
+	ip link set "${interface}" up > /dev/null 2>&1
+}
+
 #Custom function. Atheros chipset detector
 function is_atheros_chipset() {
 
 	debug_print
 
 	if [[ "${chipset,,}" =~ atheros ]]; then
+		return 0
+	fi
+
+	return 1
+}
+
+#Custom function. Realtek chipset detector
+function is_realtek_chipset() {
+
+	debug_print
+
+	if [[ "${chipset,,}" =~ realtek ]]; then
+		return 0
+	fi
+
+	return 1
+}
+
+#Custom function. Ralink chipset detector
+function is_ralink_chipset() {
+
+	debug_print
+
+	if [[ "${chipset,,}" =~ ralink ]]; then
 		return 0
 	fi
 
