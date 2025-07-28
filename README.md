@@ -5,7 +5,7 @@ WPA3 Dragon Drain attack packaged as [airgeddon] plugin
 Dragon Drain is a Denial of Service (DoS) technique that overwhelms vulnerable WPA3 access points by flooding them with large numbers of resource-intensive SAE (Simultaneous Authentication of Equals) commit messages. The surge in traffic exhausts the AP’s processing resources, causing legitimate clients to be dropped and preventing new associations. This weakness primarily affects first-generation WPA3 routers and any devices that have not yet been patched against the Dragonblood family of vulnerabilities. Even on vulnerable devices, the effect may take a few minutes to appear, as the access point gradually degrades while processing the excessive volume of authentication packets.
 
 ## What does this plugin do
-This plugin gets Dragon Drain from original GitHub repository, edits, compiles and runs it integrated as a menu option in [airgeddon].
+This plugin retrieves Dragon Drain from the original GitHub repository, installs the required dependencies, modifies and compiles it, and then runs it integrated as a menu option in [airgeddon].
 
 ## Warnings & Compatibility
 - Only some WPA3 access points are affected. Since this attack was discovered some time ago, most APs have already been patched against it. Therefore, if you are unsuccessful, the main reason could be that the access point is not vulnerable.
@@ -40,7 +40,7 @@ This is how it should look like:
 ## Credits
  - Thanks to Mathy Vanhoef for discovering the flaw. Original repository: https://github.com/vanhoefm/dragondrain-and-time
  - Thanks to [OscarAkaElvis] for his help in the development of the plugin
- - Thanks to [xpz3] for the research to adapt the original attack to work on all chipsets
+ - Thanks to [xpz3] for the research to adapt the original attack to work with all chipsets
 
 ## TODO List
  - Do the final review of the language strings by native speaker translators
