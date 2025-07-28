@@ -335,6 +335,15 @@ function wpa3_dragon_drain_attack_option() {
 		return 1
 	fi
 
+	if [[ -n "${channel}" ]] && [[ "${channel}" -gt 14 ]]; then
+		if [ "${interfaces_band_info['main_wifi_interface','5Ghz_allowed']}" -eq 0 ]; then
+			echo
+			language_strings "${language}" 515 "red"
+			language_strings "${language}" 115 "read"
+			return 1
+		fi
+	fi
+
 	if ! validate_wpa3_network; then
 		return 1
 	fi
