@@ -15,9 +15,13 @@ plugin_distros_supported=("Kali" "Kali arm" "Parrot" "Parrot arm" "Debian" "Ubun
 
 dragon_drain_dir="/dragondrain/"
 dragon_drain_binary_path="${dragon_drain_dir}src/dragondrain"
+dragon_drain_install_path="/usr/local/bin/$(basename "${dragon_drain_binary_path}")"
 dragon_drain_repo="https://github.com/vanhoefm/dragondrain-and-time"
 ath_masker_dir="/ath_masker/"
 ath_masker_repo="https://github.com/vanhoefm/ath_masker"
+dragon_drain_dependencies_installed=0
+ath_masker_dependencies_installed=0
+linux_headers_installed=0
 
 #Custom function. Execute WPA3 Dragon Drain attack
 function exec_wpa3_dragon_drain_attack() {
@@ -29,8 +33,8 @@ function exec_wpa3_dragon_drain_attack() {
 
 	recalculate_windows_sizes
 
-	manage_output "+j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_binary_path} | tee ${tmpdir}agwpa3/${wpa3log_file} ${colorize}" "wpa3 dragon drain attack" "active"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_binary_path}" "wpa3 dragon drain attack"
+	manage_output "+j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_install_path} | tee ${tmpdir}agwpa3/${wpa3log_file} ${colorize}" "wpa3 dragon drain attack" "active"
+	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_install_path}" "wpa3 dragon drain attack"
 }
 
 #Custom function. Validate a WPA3 network
@@ -53,7 +57,7 @@ function dragon_drain_validation() {
 
 	debug_print
 
-	if ! [ -f "${dragon_drain_binary_path}" ]; then
+	if ! [ -f "${dragon_drain_install_path}" ]; then
 		echo
 		language_strings "${language}" "wpa3_dragon_drain_attack_10" "yellow"
 		language_strings "${language}" 115 "read"
@@ -75,66 +79,128 @@ function ath_masker_module_checker() {
 	return 0
 }
 
-# Custom function. Install missing dependencies if needed
-# shellcheck disable=SC2181
-function install_dragon_drain_dependencies_if_needed() {
+#Custom function. Check if Linux headers are installed and the correct name of the package in the distro
+function check_linux_headers_package() {
 
 	debug_print
 
-	echo
-	language_strings "${language}" "wpa3_dragon_drain_attack_20" "blue"
-	language_strings "${language}" 115 "read"
-
-	dependencies_ok=1
+	local arch
+	local headers_metapackage
+	local headers_unamepackage
 
 	arch=$(dpkg --print-architecture)
+	headers_metapackage="linux-headers-${arch}"
+	headers_unamepackage="linux-headers-$(uname -r)"
 
-	export DEBIAN_FRONTEND=noninteractive
-	update_output=$(apt update 2>&1)
-	install_output=$(apt -y install autoconf automake libtool shtool libssl-dev pkg-config git linux-headers-"${arch}" 2>&1)
+	if dpkg -l | grep -q "${headers_unamepackage}"; then
+		linux_headers_installed=1
+		return 0
+	fi
 
-	if [[ $? -ne 0 ]]; then
-		dependencies_ok=0
+	if ! apt-cache show "${headers_metapackage}" > /dev/null 2>&1; then
+		if ! apt-cache show linux-headers-"$(uname -r)" > /dev/null 2>&1; then
+			return 1
+		else
+			headers_package="${headers_unamepackage}"
+		fi
+	else
+		headers_package="${headers_metapackage}"
+	fi
+
+	return 0
+}
+
+#Custom function. Install missing dependencies if needed
+#shellcheck disable=SC2181
+function install_dragon_drain_dependencies() {
+
+	debug_print
+
+	local dependencies_result
+	local ath_masker_dependencies_result
+
+	if [ "${dragon_drain_dependencies_installed}" -eq 0 ]; then
 		echo
-		language_strings "${language}" "wpa3_dragon_drain_attack_11" "red"
+		language_strings "${language}" "wpa3_dragon_drain_attack_20" "blue"
 		language_strings "${language}" 115 "read"
 
-		ask_yesno "wpa3_dragon_drain_attack_12" "yes"
-		if [ "${yesno}" = "y" ]; then
-			echo "${update_output}"
-			echo
-			echo "${install_output}"
-			language_strings "${language}" 115 "read"
+		export DEBIAN_FRONTEND=noninteractive
+		update_output=$(apt update 2>&1)
+		install_output=$(apt -y install autoconf automake libtool shtool libssl-dev pkg-config git 2>&1)
+		dependencies_result=$?
+
+		if [ "${linux_headers_installed}" -eq 0 ]; then
+			if is_atheros_chipset && [[ "${ath_masker_dependencies_installed}" -eq 0 ]]; then
+				install_output+=$(apt -y install "${headers_package}" 2>&1)
+				ath_masker_dependencies_result=$?
+
+				if [[ "${ath_masker_dependencies_result}" -eq 0 ]]; then
+					ath_masker_dependencies_installed=1
+				fi
+			fi
 		fi
 
-		return 1
+		if [[ "${dependencies_result}" -ne 0 ]]; then
+			echo
+			language_strings "${language}" "wpa3_dragon_drain_attack_11" "red"
+			language_strings "${language}" 115 "read"
+
+			ask_yesno "wpa3_dragon_drain_attack_12" "yes"
+			if [ "${yesno}" = "y" ]; then
+				echo "${update_output}"
+				echo "${install_output}"
+				language_strings "${language}" 115 "read"
+			fi
+
+			return 1
+		else
+			echo
+			language_strings "${language}" "wpa3_dragon_drain_attack_14" "blue"
+			language_strings "${language}" 115 "read"
+			dragon_drain_dependencies_installed=1
+		fi
 	else
 		echo
-		language_strings "${language}" "wpa3_dragon_drain_attack_14" "blue"
-		language_strings "${language}" 115 "read"
+		language_strings "${language}" "wpa3_dragon_drain_attack_22" "blue"
 	fi
+
+	return 0
 }
 
 #Custom function. Handle specific requirements for Atheros chipsets
+#shellcheck disable=SC2164
 function handle_atheros_chipset_requirements() {
 
 	debug_print
 
-	if [[ "${1,,}" =~ atheros ]]; then
+	if is_atheros_chipset; then
 		if ! ath_masker_module_checker; then
 			echo
 			language_strings "${language}" "wpa3_dragon_drain_attack_16" "yellow"
 			language_strings "${language}" 115 "read"
 
+			echo
 			rm -rf "${ath_masker_dir}" 2> /dev/null
-			git clone "${ath_masker_repo}" "${ath_masker_dir}"
-			cd "${ath_masker_dir}" || return 1
+			git clone --depth 1 "${ath_masker_repo}" "${ath_masker_dir}"
+			cd "${ath_masker_dir}"
 			make
+
+			mkdir -p "/lib/modules/$(uname -r)/kernel/drivers/net/wireless/"
+			cp ath_masker.ko "/lib/modules/$(uname -r)/kernel/drivers/net/wireless/"
+			depmod -a
+
+			echo -e "ath\nath_masker" | tee /etc/modules-load.d/ath_masker.conf > /dev/null
+			echo "softdep ath_masker pre: ath" | tee /etc/modprobe.d/ath_masker.conf > /dev/null
+
 			modprobe ath
-			insmod ath_masker.ko
+			modprobe ath_masker
+
 			ip link set "${interface}" down > /dev/null 2>&1
 			sleep 1
 			ip link set "${interface}" up > /dev/null 2>&1
+
+			cd "${scriptfolder}"
+			rm -rf "${ath_masker_dir}" 2> /dev/null
 
 			if ath_masker_module_checker; then
 				echo
@@ -161,7 +227,7 @@ function dragon_drain_installation_and_compilation() {
 
 	echo
 	rm -rf "${dragon_drain_dir}" 2> /dev/null
-	git clone "${dragon_drain_repo}" "${dragon_drain_dir}"
+	git clone --depth 1 "${dragon_drain_repo}" "${dragon_drain_dir}"
 	cd "${dragon_drain_dir}"
 	sed -i '/\/\/ Easiest is to just call ifconfig and iw/i \/*' "${dragon_drain_dir}src/dragondrain.c"
 	sed -i 's|// Open interface again|*/ // Open interface again|' "${dragon_drain_dir}src/dragondrain.c"
@@ -173,17 +239,18 @@ function dragon_drain_installation_and_compilation() {
 	compilation_result=$?
 
 	if [ "${compilation_result}" -ne 0 ]; then
-		chmod +x "${dragon_drain_binary_path}" 2> /dev/null
 		echo
 		language_strings "${language}" "wpa3_dragon_drain_attack_15" "red"
 		language_strings "${language}" 115 "read"
-		return 1
+	else
+		chmod +x "${dragon_drain_binary_path}" 2> /dev/null
+		ln -s "${dragon_drain_binary_path}" "${dragon_drain_install_path}"
+		chmod +x "${dragon_drain_install_path}" 2> /dev/null
+		echo
+		language_strings "${language}" "wpa3_dragon_drain_attack_13" "blue"
 	fi
 
-	echo
-	language_strings "${language}" "wpa3_dragon_drain_attack_13" "blue"
-
-	return 0
+	return "${compilation_result}"
 }
 
 #Custom function. Validate if the needed plugin python file exists
@@ -280,12 +347,20 @@ function wpa3_dragon_drain_attack_option() {
 		return 1
 	fi
 
-	install_dragon_drain_dependencies_if_needed
-	if [ "${dependencies_ok}" -eq 0 ]; then
+	set_chipset "${interface}"
+	if [ "${ath_masker_dependencies_installed}" -eq 0 ]; then
+		if is_atheros_chipset && ! check_linux_headers_package; then
+			echo
+			language_strings "${language}" "wpa3_dragon_drain_attack_21" "yellow"
+			language_strings "${language}" 115 "read"
+		fi
+	fi
+
+	if ! install_dragon_drain_dependencies; then
 		return 1
 	fi
 
-	handle_atheros_chipset_requirements "${chipset}"
+	handle_atheros_chipset_requirements
 
 	if ! dragon_drain_validation; then
 		dragon_drain_installation_and_compilation
@@ -301,6 +376,18 @@ function wpa3_dragon_drain_attack_option() {
 	language_strings "${language}" 4 "read"
 
 	exec_wpa3_dragon_drain_attack
+}
+
+#Custom function. Atheros chipset detector
+function is_atheros_chipset() {
+
+	debug_print
+
+	if [[ "${chipset,,}" =~ atheros ]]; then
+		return 0
+	fi
+
+	return 1
 }
 
 #Custom function. Create the WPA3 attacks menu
@@ -546,7 +633,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["SPANISH","wpa3_dragon_drain_attack_3"]="5.  Ataque Dragon Drain WPA3"
 	arr["FRENCH","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Attaque de Dragon Drain WPA3"
 	arr["CATALAN","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Atac WPA3 Dragon Drain"
-	arr["PORTUGUESE","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Ataque de drenagem do dragão WPA3"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Ataque de Dragon Drain WPA3"
 	arr["RUSSIAN","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Атака на WPA3 Dragon Drain"
 	arr["GREEK","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Επίθεση WPA3 Dragon Drain"
 	arr["ITALIAN","wpa3_dragon_drain_attack_3"]="\${pending_of_translation} 5.  Attacco WPA3 Dragon Drain"
@@ -640,19 +727,19 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_dragon_drain_attack_9"]="إلى إصدار أحدث aircrack بشكل صحيح. قم بتحديث WPA3 على الأقل, للتعامل مع شبكات ال \${aircrack_wpa3_version} يلزم توفر الإصدار .aircrack تم اكتشاف نسخة قديمة من"
 	arr["CHINESE","wpa3_dragon_drain_attack_9"]="当前aircrack的版本已过期。如果您需要处理 WPA3 加密类型的网络，至少需要版本 \${aircrack_wpa3_version}。否则将无法进行攻击。请尝试将您的aircrack包更新到最高版本"
 
-	arr["ENGLISH","wpa3_dragon_drain_attack_10"]="The compiled Dragon Drain binary was not found in the expected location \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". It will now be installed and compiled. The entire process will be displayed on screen, as it may be useful in case of an error. This may take a few minutes. Please be patient and do not interrupt the process"
-	arr["SPANISH","wpa3_dragon_drain_attack_10"]="No se encuentra el binario de Dragon Drain compilado en la ubicación esperada \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Se procederá a instalarlo y compilarlo. Se mostrará por pantalla todo el proceso ya que puede ser útil en caso de error. Es posible que tome algunos minutos, por favor ten paciencia y no interrumpas el proceso"
-	arr["FRENCH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Le binaire Dragon Dragon compilé n'a pas été trouvé dans l'emplacement attendu \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Il sera désormais installé et compilé. L'ensemble du processus sera affiché à l'écran, car il peut être utile en cas d'erreur. Cela peut prendre quelques minutes. Soyez patient et n'interrompez pas le processus"
-	arr["CATALAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} El binari de desguàs de drac compilat no es va trobar a la ubicació esperada \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Ara s’instal·larà i es compilarà. Tot el procés es mostrarà a la pantalla, ja que pot ser útil en cas d’error. Això pot trigar uns minuts. Tingueu paciència i no interrompin el procés"
-	arr["PORTUGUESE","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} O binário de dragão de dragão compilado não foi encontrado no local esperado \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Agora ele será instalado e compilado. Todo o processo será exibido na tela, pois pode ser útil em caso de erro. Isso pode levar alguns minutos. Por favor, seja paciente e não interrompa o processo"
-	arr["RUSSIAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Составленный двоичный файл Dragon Drain не был найден в ожидаемом месте \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Теперь он будет установлен и составлен. Весь процесс будет отображаться на экране, так как он может быть полезен в случае ошибки. Это может занять несколько минут. Пожалуйста, будьте терпеливы и не перебивайте процесс"
-	arr["GREEK","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Το συντάκτη Dragon Drain Binary δεν βρέθηκε στην αναμενόμενη θέση \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Τώρα θα εγκατασταθεί και θα καταρτιστεί. Ολόκληρη η διαδικασία θα εμφανιστεί στην οθόνη, καθώς μπορεί να είναι χρήσιμη σε περίπτωση σφάλματος. Αυτό μπορεί να διαρκέσει λίγα λεπτά. Παρακαλούμε να είστε υπομονετικοί και μην διακόψετε τη διαδικασία"
-	arr["ITALIAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Il binario Dragon Dragon compilato non è stato trovato nella posizione prevista \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Ora verrà installato e compilato. L'intero processo verrà visualizzato sullo schermo, in quanto potrebbe essere utile in caso di errore. Questo potrebbe richiedere qualche minuto. Si prega di essere paziente e non interrompere il processo"
-	arr["POLISH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Skompilowany binarny Dragon Dride nie został znaleziony w oczekiwanej lokalizacji \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Zostanie teraz zainstalowany i skompilowany. Cały proces zostanie wyświetlony na ekranie, ponieważ może być przydatny w przypadku błędu. Może to potrwać kilka minut. Prosimy o cierpliwość i nie przerywać procesu"
-	arr["GERMAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Der kompilierte Dragon Drain -Binär wurde nicht an dem erwarteten Ort \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\" gefunden. Es wird jetzt installiert und zusammengestellt. Der gesamte Vorgang wird auf dem Bildschirm angezeigt, da er bei einem Fehler nützlich sein kann. Dies kann ein paar Minuten dauern. Bitte sei geduldig und unterbricht den Prozess nicht"
-	arr["TURKISH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Derlenmiş ejderha drenaj ikili, beklenen yerde bulunamadı \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". Şimdi kurulacak ve derlenecek. Bir hata durumunda yararlı olabileceğinden, tüm işlem ekranda görüntülenecektir. Bu birkaç dakika sürebilir. Lütfen sabırlı olun ve süreci kesintiye uğratmayın"
-	arr["ARABIC","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} لم يتم العثور على ثنائي Dragon Dragon Binary في الموقع المتوقع \"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\". سيتم تثبيته الآن وتجميعه. سيتم عرض العملية بأكملها على الشاشة ، حيث قد تكون مفيدة في حالة وجود خطأ. هذا قد يستغرق بضع دقائق. يرجى التحلي بالصبر ولا تقاطع العملية"
-	arr["CHINESE","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} 在预期位置未找到编译的龙流二进制文件\"\${normal_color}\${dragon_drain_binary_path}\${yellow_color}\"。现在将安装和编译。整个过程将显示在屏幕上，因为在错误的情况下可能很有用。这可能需要几分钟。请耐心等待，不要打扰该过程"
+	arr["ENGLISH","wpa3_dragon_drain_attack_10"]="The compiled Dragon Drain binary was not found in the expected location \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". It will now be installed and compiled. The entire process will be displayed on screen, as it may be useful in case of an error. This may take a few minutes. Please be patient and do not interrupt the process"
+	arr["SPANISH","wpa3_dragon_drain_attack_10"]="No se encuentra el binario de Dragon Drain compilado en la ubicación esperada \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Se procederá a instalarlo y compilarlo. Se mostrará por pantalla todo el proceso ya que puede ser útil en caso de error. Es posible que tome algunos minutos, por favor ten paciencia y no interrumpas el proceso"
+	arr["FRENCH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Le binaire Dragon Dragon compilé n'a pas été trouvé dans l'emplacement attendu \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Il sera désormais installé et compilé. L'ensemble du processus sera affiché à l'écran, car il peut être utile en cas d'erreur. Cela peut prendre quelques minutes. Soyez patient et n'interrompez pas le processus"
+	arr["CATALAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} El binari de desguàs de drac compilat no es va trobar a la ubicació esperada \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Ara s’instal·larà i es compilarà. Tot el procés es mostrarà a la pantalla, ja que pot ser útil en cas d’error. Això pot trigar uns minuts. Tingueu paciència i no interrompin el procés"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} O binário de dragão de dragão compilado não foi encontrado no local esperado \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Agora ele será instalado e compilado. Todo o processo será exibido na tela, pois pode ser útil em caso de erro. Isso pode levar alguns minutos. Por favor, seja paciente e não interrompa o processo"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Составленный двоичный файл Dragon Drain не был найден в ожидаемом месте \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Теперь он будет установлен и составлен. Весь процесс будет отображаться на экране, так как он может быть полезен в случае ошибки. Это может занять несколько минут. Пожалуйста, будьте терпеливы и не перебивайте процесс"
+	arr["GREEK","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Το συντάκτη Dragon Drain Binary δεν βρέθηκε στην αναμενόμενη θέση \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Τώρα θα εγκατασταθεί και θα καταρτιστεί. Ολόκληρη η διαδικασία θα εμφανιστεί στην οθόνη, καθώς μπορεί να είναι χρήσιμη σε περίπτωση σφάλματος. Αυτό μπορεί να διαρκέσει λίγα λεπτά. Παρακαλούμε να είστε υπομονετικοί και μην διακόψετε τη διαδικασία"
+	arr["ITALIAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Il binario Dragon Dragon compilato non è stato trovato nella posizione prevista \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Ora verrà installato e compilato. L'intero processo verrà visualizzato sullo schermo, in quanto potrebbe essere utile in caso di errore. Questo potrebbe richiedere qualche minuto. Si prega di essere paziente e non interrompere il processo"
+	arr["POLISH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Skompilowany binarny Dragon Dride nie został znaleziony w oczekiwanej lokalizacji \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Zostanie teraz zainstalowany i skompilowany. Cały proces zostanie wyświetlony na ekranie, ponieważ może być przydatny w przypadku błędu. Może to potrwać kilka minut. Prosimy o cierpliwość i nie przerywać procesu"
+	arr["GERMAN","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Der kompilierte Dragon Drain-Binär wurde nicht an dem erwarteten Ort \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\" gefunden. Es wird jetzt installiert und zusammengestellt. Der gesamte Vorgang wird auf dem Bildschirm angezeigt, da er bei einem Fehler nützlich sein kann. Dies kann ein paar Minuten dauern. Bitte sei geduldig und unterbricht den Prozess nicht"
+	arr["TURKISH","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} Derlenmiş ejderha drenaj ikili, beklenen yerde bulunamadı \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Şimdi kurulacak ve derlenecek. Bir hata durumunda yararlı olabileceğinden, tüm işlem ekranda görüntülenecektir. Bu birkaç dakika sürebilir. Lütfen sabırlı olun ve süreci kesintiye uğratmayın"
+	arr["ARABIC","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} لم يتم العثور على ثنائي Dragon Dragon binary في الموقع المتوقع \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". سيتم تثبيته الآن وتجميعه. سيتم عرض العملية بأكملها على الشاشة ، حيث قد تكون مفيدة في حالة وجود خطأ. هذا قد يستغرق بضع دقائق. يرجى التحلي بالصبر ولا تقاطع العملية"
+	arr["CHINESE","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} 在预期位置未找到编译的龙流二进制文件\"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\"。现在将安装和编译。整个过程将显示在屏幕上，因为在错误的情况下可能很有用。这可能需要几分钟。请耐心等待，不要打扰该过程"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_11"]="An error occurred while installing the dependencies. Check your Internet connection or if there is any problem on your system"
 	arr["SPANISH","wpa3_dragon_drain_attack_11"]="Ocurrió un error instalando las dependencias. Revisa tu conexión a Internet o si existe algún problema en tu sistema"
@@ -730,7 +817,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["CATALAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Chipset Atheros detectat sense \${normal_color}ath_masker\${yellow_color} Mòdul. Cal que els chipsets Atheros facin que aquest atac funcioni correctament. S’instal·larà"
 	arr["PORTUGUESE","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} O chipset de Atheros detectado sem o módulo \${normal_color}ath_masker\${yellow_color}. É necessário que os chipsets ateros façam esse ataque funcionar corretamente. Será instalado"
 	arr["RUSSIAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Atheros Chipset обнаружен без модуля \${normal_color}ath_masker\${yellow_color}. Для чипсетов Atheros необходимо сделать эту атаку должным образом. Он будет установлен"
-	arr["GREEK","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Το chipset atheros ανιχνεύθηκε χωρίς ενότητα \${normal_color}ath_masker\${yellow_color}. Είναι απαραίτητο για τα chipsets του Atheros να κάνουν αυτή την επίθεση να λειτουργήσει σωστά. Θα εγκατασταθεί"
+	arr["GREEK","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Το chipset Atheros ανιχνεύθηκε χωρίς ενότητα \${normal_color}ath_masker\${yellow_color}. Είναι απαραίτητο για τα chipsets του Atheros να κάνουν αυτή την επίθεση να λειτουργήσει σωστά. Θα εγκατασταθεί"
 	arr["ITALIAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Atheros Chipset rilevato senza modulo \${normal_color}ath_masker\${yellow_color}. È necessario affinché i chipset Atheros facciano funzionare questo attacco correttamente. Sarà installato"
 	arr["POLISH","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Chipset Atheros wykryty bez modułu \${normal_color}ath_masker\${yellow_color}. Chipsy Atheros są potrzebne, aby ten atak działał prawidłowo. Zostanie zainstalowany"
 	arr["GERMAN","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} Atheros -Chipsatz ohne \${normal_color}ath_masker\${yellow_color}-Modul. Es ist erforderlich, damit Atheros -Chipsätze diesen Angriff richtig funktionieren. Es wird installiert"
@@ -752,19 +839,19 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ARABIC","wpa3_dragon_drain_attack_17"]="\${pending_of_translation} تم تثبيت وحدة \${normal_color}ath_masker\${blue_color} kernel بنجاح"
 	arr["CHINESE","wpa3_dragon_drain_attack_17"]="\${pending_of_translation} \${normal_color}ath_masker\${blue_color}内核模块已成功安装"
 
-	arr["ENGLISH","wpa3_dragon_drain_attack_18"]="There was a problem installing \${normal_color}ath_masker\${yellow_color} kernel module. The reliability of the attack could be affected. Be sure to install this manually (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) as it is needed for Atheros chipsets"
-	arr["SPANISH","wpa3_dragon_drain_attack_18"]="Hubo un problema instalando el módulo de kernel \${normal_color}ath_masker\${yellow_color}. La efectividad del ataque podría verse afectada. Asegúrate de instalar esto manualmente (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) ya que es necesario para los chips de Atheros"
-	arr["FRENCH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Il y avait un problème à installer le module du noyau \${normal_color}ath_masker\${yellow_color}. La fiabilité de l'attaque pourrait être affectée. Assurez-vous de l'installer manuellement (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) tel qu'il est nécessaire pour les chipsets Atheros"
-	arr["CATALAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Hi va haver un problema per instal·lar el mòdul del kernel \${normal_color}ath_masker\${yellow_color}. La fiabilitat de l’atac es podria veure afectada. Assegureu -vos d’instal·lar-ho manualment (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}), ja que es necessita per a chipsets d’Atheros"
-	arr["PORTUGUESE","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Houve um problema para instalar o módulo \${normal_color}ath_masker\${yellow_color} kernel. A confiabilidade do ataque pode ser afetada. Certifique -se de instalar isso manualmente (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}), pois é necessário para os chipsets Atheros"
-	arr["RUSSIAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Была проблема с установкой модуля ядра \${normal_color}ath_masker\${yellow_color}. На надежность атаки может быть затронута. Обязательно установите это вручную (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}), как это необходимо для чипсетов Atheros"
-	arr["GREEK","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Υπήρχε πρόβλημα εγκατάστασης της μονάδας πυρήνα \${normal_color}ath_masker\${yellow_color}. Η αξιοπιστία της επίθεσης θα μπορούσε να επηρεαστεί. Φροντίστε να εγκαταστήσετε αυτό το χέρι (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) όπως είναι απαραίτητο για chipsets Atheros"
-	arr["ITALIAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} C'è stato un problema a installare il modulo kernel \${normal_color}ath_masker\${yellow_color}. L'affidabilità dell'attacco potrebbe essere influenzata. Assicurati di installarlo manualmente (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) in quanto è necessario per i chipset Atheros"
-	arr["POLISH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Wystąpił problem z instalacją modułu jądra \${normal_color}ath_masker\${yellow_color}. Można wpłynąć na wiarygodność ataku. Pamiętaj, aby zainstalować to ręcznie (\${normal_color}https://github.com/vanhoefm/ath_maser\${yellow_color}), ponieważ jest to potrzebne do chipsetów Atheros"
-	arr["GERMAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Bei der Installation des Kernelmoduls \${normal_color}ath_masker\${yellow_color} ist ein Problem aufgetreten. Die Effektivität des Angriffs kann dadurch beeinträchtigt werden. Installieren Sie es unbedingt manuell (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}), da es für Atheros-Chips erforderlich ist."
-	arr["TURKISH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} \${normal_color}ath_masker\${yellow_color} çekirdek modülünü kurarken bir sorun vardı. Saldırının güvenilirliği etkilenebilir. Bunu manuel olarak (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) Atheros yonga setleri için gerekli olduğu için yüklediğinizden emin olun."
-	arr["ARABIC","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} كانت هناك مشكلة في تثبيت \${normal_color}ath_masker\${yellow_color} kernel module. يمكن أن تتأثر موثوقية الهجوم. تأكد من تثبيت هذا يدويًا (\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}) كما هو مطلوب لشرائح Atheros"
-	arr["CHINESE","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} 安装\${normal_color}ath_masker\${yellow_color}内核模块存在问题。攻击的可靠性可能会受到影响。请务必手动安装此此此此此操作（\${normal_color}https://github.com/vanhoefm/ath_masker\${yellow_color}）是Atheros芯片组所需的"
+	arr["ENGLISH","wpa3_dragon_drain_attack_18"]="There was a problem installing \${normal_color}ath_masker\${yellow_color} kernel module. The reliability of the attack could be affected. Be sure to install this manually (\${normal_color}\${ath_masker_repo}\${yellow_color}) as it is needed for Atheros chipsets"
+	arr["SPANISH","wpa3_dragon_drain_attack_18"]="Hubo un problema instalando el módulo de kernel \${normal_color}ath_masker\${yellow_color}. La efectividad del ataque podría verse afectada. Asegúrate de instalar esto manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}) ya que es necesario para los chips de Atheros"
+	arr["FRENCH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Il y avait un problème à installer le module du noyau \${normal_color}ath_masker\${yellow_color}. La fiabilité de l'attaque pourrait être affectée. Assurez-vous de l'installer manuellement (\${normal_color}\${ath_masker_repo}\${yellow_color}) tel qu'il est nécessaire pour les chipsets Atheros"
+	arr["CATALAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Hi va haver un problema per instal·lar el mòdul del kernel \${normal_color}ath_masker\${yellow_color}. La fiabilitat de l’atac es podria veure afectada. Assegureu -vos d’instal·lar-ho manualment (\${normal_color}\${ath_masker_repo}\${yellow_color}), ja que es necessita per a chipsets d’Atheros"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Houve um problema para instalar o módulo \${normal_color}ath_masker\${yellow_color} kernel. A confiabilidade do ataque pode ser afetada. Certifique -se de instalar isso manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}), pois é necessário para os chipsets Atheros"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Была проблема с установкой модуля ядра \${normal_color}ath_masker\${yellow_color}. На надежность атаки может быть затронута. Обязательно установите это вручную (\${normal_color}\${ath_masker_repo}\${yellow_color}), как это необходимо для чипсетов Atheros"
+	arr["GREEK","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Υπήρχε πρόβλημα εγκατάστασης της μονάδας πυρήνα \${normal_color}ath_masker\${yellow_color}. Η αξιοπιστία της επίθεσης θα μπορούσε να επηρεαστεί. Φροντίστε να εγκαταστήσετε αυτό το χέρι (\${normal_color}\${ath_masker_repo}\${yellow_color}) όπως είναι απαραίτητο για chipsets Atheros"
+	arr["ITALIAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} C'è stato un problema a installare il modulo kernel \${normal_color}ath_masker\${yellow_color}. L'affidabilità dell'attacco potrebbe essere influenzata. Assicurati di installarlo manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}) in quanto è necessario per i chipset Atheros"
+	arr["POLISH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Wystąpił problem z instalacją modułu jądra \${normal_color}ath_masker\${yellow_color}. Można wpłynąć na wiarygodność ataku. Pamiętaj, aby zainstalować to ręcznie (\${normal_color}\${ath_masker_repo}\${yellow_color}), ponieważ jest to potrzebne do chipsetów Atheros"
+	arr["GERMAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Bei der Installation des Kernelmoduls \${normal_color}ath_masker\${yellow_color} ist ein Problem aufgetreten. Die Effektivität des Angriffs kann dadurch beeinträchtigt werden. Installieren Sie es unbedingt manuell (\${normal_color}\${ath_masker_repo}\${yellow_color}), da es für Atheros-Chips erforderlich ist"
+	arr["TURKISH","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} \${normal_color}ath_masker\${yellow_color} çekirdek modülünü kurarken bir sorun vardı. Saldırının güvenilirliği etkilenebilir. Bunu manuel olarak (\${normal_color}\${ath_masker_repo}\${yellow_color}) Atheros yonga setleri için gerekli olduğu için yüklediğinizden emin olun"
+	arr["ARABIC","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} كانت هناك مشكلة في تثبيت \${normal_color}ath_masker\${yellow_color} kernel module. يمكن أن تتأثر موثوقية الهجوم. تأكد من تثبيت هذا يدويًا (\${normal_color}\${ath_masker_repo}\${yellow_color}) كما هو مطلوب لشرائح Atheros"
+	arr["CHINESE","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} 安装\${normal_color}ath_masker\${yellow_color}内核模块存在问题。攻击的可靠性可能会受到影响。请务必手动安装此此此此此操作（\${normal_color}\${ath_masker_repo}\${yellow_color}）是Atheros芯片组所需的"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_19"]="Atheros chipset has been detected and the kernel module \${normal_color}ath_masker\${blue_color} is also installed"
 	arr["SPANISH","wpa3_dragon_drain_attack_19"]="Se ha detectado chipset Atheros y además está instalado el módulo de kernel \${normal_color}ath_masker\${blue_color}"
@@ -793,4 +880,32 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_dragon_drain_attack_20"]="\${pending_of_translation} Gerekli bağımlılıklar şimdi kontrol edilecek"
 	arr["ARABIC","wpa3_dragon_drain_attack_20"]="\${pending_of_translation} سيتم الآن التحقق من التبعيات المطلوبة"
 	arr["CHINESE","wpa3_dragon_drain_attack_20"]="\${pending_of_translation} 现在将检查所需的依赖项"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_21"]="Chipset Atheros detected, but you don't have the kernel module \${normal_color}ath_masker\${yellow_color} installed. To install it, kernel headers are needed, and the plugin has not been able to determine the name of the package that is needed to be able to install it. The reliability of the attack could be affected. Be sure to install this manually (\${normal_color}\${ath_masker_repo}\${yellow_color}) as it is needed for Atheros chipsets"
+	arr["SPANISH","wpa3_dragon_drain_attack_21"]="Chipset Atheros detectado, pero no tienes el módulo de kernel \${normal_color}ath_masker\${yellow_color} instalado. Para instalarlo hacen falta los headers del kernel, y el plugin no ha sido capaz de determinar el nombre del paquete que hace falta para poder instalarlo. La efectividad del ataque podría verse afectada. Asegúrate de instalar esto manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}) ya que es necesario para los chips de Atheros"
+	arr["FRENCH","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Chipset Atheros détecté, mais vous n'avez pas le module du noyau \${normal_color}ath_masker\${yellow_color} installé. Pour l'installer, des en-têtes de noyau sont nécessaires et le plugin n'a pas été en mesure de déterminer le nom du package nécessaire pour pouvoir l'installer. L'efficacité de l'attaque pourrait être affectée. Assurez-vous de l'installer manuellement (\${normal_color}\${ath_masker_repo}\${yellow_color}) car il est nécessaire pour les puces Atheros"
+	arr["CATALAN","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Chipset Atheros detectat, però no teniu instal·lat el mòdul del nucli \${normal_color}ath_masker\${yellow_color}. Per instal·lar -lo, calen capçaleres del nucli i el complement no ha pogut determinar el nom del paquet que es necessita per poder instal·lar -lo. L’efectivitat de l’atac es podria veure afectada. Assegureu -vos d’instal·lar -ho manualment (\${normal_color}\${ath_masker_repo}\${yellow_color}), ja que és necessari per als xips Atheros"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} O chipset Atheros detectou, mas você não tem o módulo do kernel \${normal_color}ath_masker\${yellow_color} instalado. Para instalá -lo, os cabeçalhos do kernel são necessários e o plug -in não conseguiu determinar o nome do pacote necessário para poder instalá -lo. A eficácia do ataque pode ser afetada. Certifique -se de instalar isso manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}), pois é necessário para os chips Atheros"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Обнаружено chipset Atheros, но у вас нет модуля ядра \${normal_color}ath_masker\${yellow_color}. Чтобы установить его, необходимы заголовки ядра, и плагин не смог определить название пакета, необходимого для его установки. Эффективность атаки может быть затронута. Обязательно установите это вручную (\${normal_color}\${ath_masker_repo}\${yellow_color}), поскольку это необходимо для чипсов Atheros"
+	arr["GREEK","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Chipset Atheros ανιχνεύθηκε, αλλά δεν έχετε την ενότητα του πυρήνα \${normal_color}ath_masker\${yellow_color} εγκατεστημένο. Για να το εγκαταστήσετε, χρειάζονται κεφαλίδες πυρήνα και το plugin δεν μπόρεσε να προσδιορίσει το όνομα του πακέτου που απαιτείται για να μπορέσει να το εγκαταστήσει. Η αποτελεσματικότητα της επίθεσης θα μπορούσε να επηρεαστεί. Να είστε βέβαιος να εγκαταστήσετε αυτό το χειροκίνητο (\${normal_color}\${ath_masker_repo}\${yellow_color}) αφού είναι απαραίτητο για τα chipsets Atheros"
+	arr["ITALIAN","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Chipset Atheros rilevato, ma non hai il modulo del kernel \${normal_color}ath_masker\${yellow_color} installato. Per installarlo, sono necessarie testate per kernel e il plug -in non è stato in grado di determinare il nome del pacchetto che è necessario per poterlo installarlo. L'efficacia dell'attacco potrebbe essere influenzata. Assicurati di installare questo manualmente (\${normal_color}\${ath_masker_repo}\${yellow_color}) poiché è necessario per Atheros chipsets"
+	arr["POLISH","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Wykryto chipset Atheros, ale nie masz zainstalowanego modułu jądra \${normal_color}ath_masker\${yellow_color}. Aby go zainstalować, potrzebne są nagłówki jądra, a wtyczka nie była w stanie określić nazwy pakietu potrzebnego do jego zainstalowania. Można wpłynąć na skuteczność ataku. Pamiętaj, aby zainstalować to ręcznie (\${normal_color}\${ath_masker_repo}\${yellow_color}), ponieważ jest to konieczne dla chipsets Atheros"
+	arr["GERMAN","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Chipsatz-Atheros erkannt, aber Sie haben nicht das Kernel -Modul \${normal_color}ath_masker\${yellow_color} installiert. Um es zu installieren, sind Kernel-Header benötigt, und das Plugin konnte den Namen des Pakets nicht bestimmen, das benötigt wird, um es zu installieren. Die Effektivität des Angriffs kann dadurch beeinträchtigt werden. Installieren Sie es unbedingt manuell (\${normal_color}\${ath_masker_repo}\${yellow_color}), da es für Atheros-Chipsets erforderlich ist"
+	arr["TURKISH","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} Yonga seti Atheros tespit edildi, ancak çekirdek modülü \${normal_color}ath_masker\${yellow_color} yüklü. Yüklemek için çekirdek başlıklarına ihtiyaç vardır ve eklenti, yükleyebilmesi için gereken paketin adını belirleyememiştir. Saldırının etkinliği etkilenebilir. Bunu manuel olarak (\${normal_color}\${ath_masker_repo}\${yellow_color}) yüklediğinizden emin olun, çünkü Atheros çipleri için gereklidir"
+	arr["ARABIC","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} تم اكتشاف شرائح Atheros ، ولكن ليس لديك وحدة kernel \${normal_color}ath_masker\${yellow_color} المثبتة. لتثبيته ، هناك حاجة إلى رؤوس kernel ، ولم يتمكن المكون الإضافي من تحديد اسم الحزمة اللازمة لتكون قادرة على تثبيتها. يمكن أن تتأثر فعالية الهجوم. تأكد من تثبيت هذا يدويًا (\${normal_color}\${ath_masker_repo}\${yellow_color}) لأنه ضروري لشرائح Atheros"
+	arr["CHINESE","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} 芯片组检测到了Atheros，但是您没有内核模块\${normal_color}ath_masker\${yellow_color}已安装。要安装它，需要内核标题，并且该插件无法确定能够安装它所需的软件包的名称。攻击的可靠性可能会受到影响。请务必手动安装此此此此此操作（\${normal_color}\${ath_masker_repo}\${yellow_color}）是Atheros芯片组所需的"
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_22"]="No need to check dependencies. They were checked previously"
+	arr["SPANISH","wpa3_dragon_drain_attack_22"]="No hay necesidad de verificar las dependencias. Ya fueron revisadas anteriormente"
+	arr["FRENCH","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Pas besoin de vérifier les dépendances. Ils ont été vérifiés précédemment"
+	arr["CATALAN","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} No cal comprovar les dependències. Es van comprovar anteriorment"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Não há necessidade de verificar dependências. Eles foram verificados anteriormente"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Не нужно проверять зависимости. Они были проверены ранее"
+	arr["GREEK","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Δεν χρειάζεται να ελέγξετε τις εξαρτήσεις. Ελέγχτηκαν προηγουμένως"
+	arr["ITALIAN","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Non c'è bisogno di controllare le dipendenze. Sono stati controllati in precedenza"
+	arr["POLISH","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Nie trzeba sprawdzać zależności. Były wcześniej sprawdzone"
+	arr["GERMAN","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Keine Notwendigkeit, Abhängigkeiten zu überprüfen. Sie wurden zuvor überprüft"
+	arr["TURKISH","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} Bağımlılıkları kontrol etmeye gerek yok. Daha önce kontrol edildi"
+	arr["ARABIC","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} لا حاجة للتحقق من التبعيات. تم فحصهم من قبل"
+	arr["CHINESE","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} 无需检查依赖项。他们之前已检查"
 }
