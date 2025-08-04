@@ -358,7 +358,7 @@ function wpa3_dragon_drain_attack_option() {
 
 	set_chipset "${interface}"
 	if [ "${ath_masker_dependencies_installed}" -eq 0 ]; then
-		if is_atheros_chipset && ! check_linux_headers_package; then
+		if is_atheros_chipset && ! ath_masker_module_checker && ! check_linux_headers_package; then
 			echo
 			language_strings "${language}" "wpa3_dragon_drain_attack_21" "yellow"
 			language_strings "${language}" 115 "read"
