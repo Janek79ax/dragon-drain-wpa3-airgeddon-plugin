@@ -976,7 +976,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["CHINESE","wpa3_dragon_drain_attack_22"]="已经完成依赖项检查，无需再次检查。"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_23"]="Bitrate adjustment supported by your chipset. Adjusting it to improve reliability..."
-	arr["SPANISH","wpa3_dragon_drain_attack_23"]="Ajuste de bitrate compatible con tu chipset. Ajustaando para mejorar el rendimiento..."
+	arr["SPANISH","wpa3_dragon_drain_attack_23"]="Ajuste de bitrate compatible con tu chipset. Ajustando para mejorar el rendimiento..."
 	arr["FRENCH","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Réglage du bitrate pris en charge par votre chipset. L'ajuster pour améliorer la fiabilité..."
 	arr["CATALAN","wpa3_dragon_drain_attack_23"]="Ajust de bitrate suportat pel teu chipset. Ajustant-lo per millorar la fiabilitat..."
 	arr["PORTUGUESE","wpa3_dragon_drain_attack_23"]="Ajuste de bitrate suportado pelo seu chipset. Ajustando para melhorar a confiabilidade..."
