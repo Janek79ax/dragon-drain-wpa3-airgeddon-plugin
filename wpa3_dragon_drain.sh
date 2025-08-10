@@ -372,7 +372,14 @@ function wpa3_dragon_drain_attack_option() {
 	handle_atheros_chipset_requirements
 
 	if ! dragon_drain_validation; then
-		dragon_drain_installation_and_compilation
+		if ! check_internet_access; then
+			echo
+			language_strings "${language}" "wpa3_dragon_drain_attack_24" "red"
+			language_strings "${language}" 115 "read"
+			return 1
+		else
+			dragon_drain_installation_and_compilation
+		fi
 	fi
 
 	cd "${scriptfolder}"
@@ -988,4 +995,18 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["TURKISH","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} Yonga setiniz tarafından desteklenen bitrate ayarı. Güvenilirliği artırmak için ayarlamak..."
 	arr["ARABIC","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} ...تعديل bitrate المدعوم من مجموعة الشرائح الخاصة بك. ضبطه لتحسين الموثوقية"
 	arr["CHINESE","wpa3_dragon_drain_attack_23"]="芯片组支持 bitrate 调整。调整它以提高可靠性..."
+
+	arr["ENGLISH","wpa3_dragon_drain_attack_24"]="It seems you have no internet access. It is necessary since components must be installed to carry out the attack"
+	arr["SPANISH","wpa3_dragon_drain_attack_24"]="Parece que no tienes conexión a internet. Es necesaria ya que hay que instalar componentes para poder llevar a cabo el ataque"
+	arr["FRENCH","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Il semble que vous ne pouvez pas vous connecter à internet. Il est nécessaire car les composants doivent être installés pour effectuer l'attaque"
+	arr["CATALAN","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Sembla que no tens connexió a internet. És necessari ja que s’han d’instal·lar components per dur a terme l’atac"
+	arr["PORTUGUESE","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Parece que você não tem acesso à internet. É necessário, pois os componentes devem ser instalados para realizar o ataque"
+	arr["RUSSIAN","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Судя по всему, у вас нет Интернет доступа. Это необходимо, так как компоненты должны быть установлены для проведения атаки"
+	arr["GREEK","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Φαίνεται πως δεν έχετε πρόσβαση στο διαδίκτυο. Είναι απαραίτητο δεδομένου ότι τα εξαρτήματα πρέπει να εγκατασταθούν για την εκτέλεση της επίθεσης"
+	arr["ITALIAN","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Sembra che tu non abbia connessione a internet. È necessario poiché i componenti devono essere installati per eseguire l'attacco"
+	arr["POLISH","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Wygląda na to, że nie masz połączenia internetowego. Jest to konieczne, ponieważ należy zainstalować komponenty w celu przeprowadzenia ataku"
+	arr["GERMAN","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Es scheint, dass Sie keine Internetverbindung haben. Es scheint, dass Sie keine Internetverbindung haben. Es ist notwendig, da Komponenten installiert werden müssen, um den Angriff auszuführen"
+	arr["TURKISH","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Görünüşe göre internet erişiminiz yok. Saldırıyı gerçekleştirmek için bileşenlerin kurulması gerektiğinden gereklidir"
+	arr["ARABIC","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} إنه ضروري لأنه يجب تثبيت المكونات لتنفيذ الهجوم. يبدو لم يكن لديك اتصال بالإنترنت"
+	arr["CHINESE","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} 您似乎无法访问互联网。由于必须安装组件才能进行攻击，因此有必要"
 }
