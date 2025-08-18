@@ -838,7 +838,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ITALIAN","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} Vuoi vedere l'output dell'errore che si è verificato durante l'aggiornamento/installazione? \${blue_color}Forse in questo modo potresti scoprire la causa del problema \${normal_color}\${visual_choice}"
 	arr["POLISH","wpa3_dragon_drain_attack_12"]="Wyświetlić szczegóły błędu aktualizacji/instalacji? \${blue_color}Może to pomóc zidentyfikować przyczynę \${normal_color}\${visual_choice}"
 	arr["GERMAN","wpa3_dragon_drain_attack_12"]="Möchten Sie die Ausgabe des Fehlers sehen, der beim updaten/installieren aufgetreten ist? \${blue_color}Vielleicht finden Sie auf dieser Weise die Ursache des Fehlers \${normal_color}\${visual_choice}"
-	arr["TURKISH","wpa3_dragon_drain_attack_12"]="Güncelleme/kurulum sırasında oluşan hatanın çıktısını görmek ister misiniz? \${blue_color}Böylece sorunun temel nedenini bulabilirsiniz \${normal_color}${visual_choice}"
+	arr["TURKISH","wpa3_dragon_drain_attack_12"]="Güncelleme/kurulum sırasında oluşan hatanın çıktısını görmek ister misiniz? \${blue_color}Böylece sorunun temel nedenini bulabilirsiniz \${normal_color}\${visual_choice}"
 	arr["ARABIC","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} \${normal_color}\${visual_choice} \${blue_color}ربما بهذه الطريقة قد تجد السبب الاساسي للمشكلة \${green_color}هل تريد رؤية إخراج الخطأ الذي قدمته عند التحديث/التثبيت؟"
 	arr["CHINESE","wpa3_dragon_drain_attack_12"]="您是否想查看更新/安装时给出的错误的输出？\${blue_color}也许可能发现问题的根本原因 \${normal_color}\${visual_choice}"
 
