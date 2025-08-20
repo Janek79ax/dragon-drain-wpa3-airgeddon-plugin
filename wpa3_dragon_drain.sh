@@ -741,7 +741,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_5"]="Atak WPA3 Dragon Drain działa nieustannie, próbując przeciążyć router poprzez wyczerpanie jego zasobów (DoS)"
 	arr["GERMAN","wpa3_dragon_drain_attack_5"]="Der WPA3-Dragon-Drain-Angriff läuft ununterbrochen, um den Router zu überlasten (DoS)"
 	arr["TURKISH","wpa3_dragon_drain_attack_5"]="WPA3 Dragon Drain saldırısı, yönlendiriciyi aşırı yüklemek amacıyla kesintisiz olarak devam eder (DoS)"
-	arr["ARABIC","wpa3_dragon_drain_attack_5"]="\${pending_of_translation} (DoS) هجوم WPA3 Dragon Drain يستمر إلى ما لا نهاية بهدف إثقال كاهل جهاز التوجيه."
+	arr["ARABIC","wpa3_dragon_drain_attack_5"]="(DoS) يستمر بلا توقف بهدف إغراق جهاز التوجيه وإحداث هجوم حجب الخدمة WPA3 Dragon Drain هجوم"
 	arr["CHINESE","wpa3_dragon_drain_attack_5"]="针对 WPA3 的资源耗尽攻击将持续运行，旨在使路由器过载。 (即DoS)"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_6"]="The selected network is invalid. The target network must be WPA3 or WPA2/WPA3 in \"Mixed Mode\""
@@ -811,7 +811,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_10"]="Narzędzie Dragon Drain nie zostało znalezione w oczekiwanej ścieżce \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Zostanie teraz zainstalowane i skompilowane. Cały proces zostanie wyświetlony na ekranie, co może być przydatne w przypadku błędu. Może to potrwać kilka minut. Prosimy o cierpliwość i nie przerywanie procesu"
 	arr["GERMAN","wpa3_dragon_drain_attack_10"]="Der kompilierte Dragon Drain-Binär wurde nicht an dem erwarteten Pfad \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\" gefunden. Es wird jetzt installiert und kompiliert. Der gesamte Vorgang wird auf dem Bildschirm angezeigt, da er bei einem Fehler nützlich sein kann. Dies kann ein paar Minuten dauern. Bitte sei geduldig und unterbricht den Prozess nicht"
 	arr["TURKISH","wpa3_dragon_drain_attack_10"]="Derlenmiş Dragon Drain ikili dosyası beklenen konumda bulunamadı \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". Şimdi kurulup derlenecek. Bir hata durumunda faydalı olabileceği için tüm işlem ekranda gösterilecektir. Bu birkaç dakika sürebilir. Lütfen sabırlı olun ve süreci kesintiye uğratmayın"
-	arr["ARABIC","wpa3_dragon_drain_attack_10"]="\${pending_of_translation} لم يتم العثور على ثنائي Dragon Dragon binary في الموقع المتوقع \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\". سيتم تثبيته الآن وتجميعه. سيتم عرض العملية بأكملها على الشاشة ، حيث قد تكون مفيدة في حالة وجود خطأ. هذا قد يستغرق بضع دقائق. يرجى التحلي بالصبر ولا تقاطع العملية"
+	arr["ARABIC","wpa3_dragon_drain_attack_10"]="سيتم تثبيته وتجميعه الآن، وسيتم عرض العملية كاملة على الشاشة لأنها قد تكون مفيدة في حال حدوث خطأ. قد تستغرق هذه العملية بضع دقائق، لذا يرجى التحلي بالصبر وعدم مقاطعتها  \"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\" في الموقع المتوقع Dragon Drain binary لم يتم العثور على ملف"
 	arr["CHINESE","wpa3_dragon_drain_attack_10"]="在预期位置未找到编译好的 Dragon Drain 二进制文件\"\${normal_color}\${dragon_drain_install_path}\${yellow_color}\"。现在将安装和编译。整个过程将显示在屏幕上，因为在错误的情况下可能很有用。这可能需要几分钟。请耐心等待，不要打扰该过程"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_11"]="An error occurred while installing the dependencies. Check your Internet connection or if there is any problem on your system"
@@ -825,7 +825,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_11"]="Instalacja zależności nie powiodła się. Sprawdź, czy masz połączenie internetowe i czy system działa poprawnie"
 	arr["GERMAN","wpa3_dragon_drain_attack_11"]="Beim Installieren der Abhängigkeiten ist ein Fehler aufgetreten. Überprüfen Sie Ihre Internetverbindung oder ob ein Problem mit Ihrem System vorliegt"
 	arr["TURKISH","wpa3_dragon_drain_attack_11"]="Bağımlılıkların kurulması sırasında bir hata oluştu. İnternet bağlantınızı kontrol edin veya sisteminizde bir sorun olup olmadığını denetleyin"
-	arr["ARABIC","wpa3_dragon_drain_attack_11"]="\${pending_of_translation} حدث خطأ عن طريق تثبيت الوحدات. تحقق من اتصال الإنترنت الخاص بك أو إذا كان هناك أي مشكلة في نظامك"
+	arr["ARABIC","wpa3_dragon_drain_attack_11"]="حدث خطأ أثناء تثبيت التبعيات. تحقق من اتصالك بالإنترنت أو من وجود أي مشاكل في نظامك"
 	arr["CHINESE","wpa3_dragon_drain_attack_11"]="安装依赖时发生了一个错误。检查您的网络连接或系统是否有其他问题"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_12"]="Do you want to see the output of the error occurred while updating/installing? \${blue_color}Maybe this way you might find the root cause of the problem \${normal_color}\${visual_choice}"
@@ -839,7 +839,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_12"]="Wyświetlić szczegóły błędu aktualizacji/instalacji? \${blue_color}Może to pomóc zidentyfikować przyczynę \${normal_color}\${visual_choice}"
 	arr["GERMAN","wpa3_dragon_drain_attack_12"]="Möchten Sie die Ausgabe des Fehlers sehen, der beim updaten/installieren aufgetreten ist? \${blue_color}Vielleicht finden Sie auf dieser Weise die Ursache des Fehlers \${normal_color}\${visual_choice}"
 	arr["TURKISH","wpa3_dragon_drain_attack_12"]="Güncelleme/kurulum sırasında oluşan hatanın çıktısını görmek ister misiniz? \${blue_color}Böylece sorunun temel nedenini bulabilirsiniz \${normal_color}\${visual_choice}"
-	arr["ARABIC","wpa3_dragon_drain_attack_12"]="\${pending_of_translation} \${normal_color}\${visual_choice} \${blue_color}ربما بهذه الطريقة قد تجد السبب الاساسي للمشكلة \${green_color}هل تريد رؤية إخراج الخطأ الذي قدمته عند التحديث/التثبيت؟"
+	arr["ARABIC","wpa3_dragon_drain_attack_12"]="\${normal_color}\${visual_choice} \${blue_color}قد يساعدك ذلك في تحديد السبب الجذري للمشكلة \${green_color}هل تريد عرض مخرجات الخطأ الذي حدث أثناء التحديث/التثبيت؟"
 	arr["CHINESE","wpa3_dragon_drain_attack_12"]="您是否想查看更新/安装时给出的错误的输出？\${blue_color}也许可能发现问题的根本原因 \${normal_color}\${visual_choice}"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_13"]="Dragon Drain has been compiled and installed successfully. It is now possible to proceed with launching the attack..."
@@ -853,7 +853,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_13"]="Dragon Drain został skompilowany i zainstalowany. Możesz teraz kontynuować atak..."
 	arr["GERMAN","wpa3_dragon_drain_attack_13"]="Dragon Drain wurde kompiliert und installiert. Jetzt können Sie den Angriff weiter starten..."
 	arr["TURKISH","wpa3_dragon_drain_attack_13"]="Dragon Drain başarıyla derlendi ve kuruldu. Şimdi saldırıyı başlatmaya devam edebilirsiniz..."
-	arr["ARABIC","wpa3_dragon_drain_attack_13"]="\${pending_of_translation} تم تجميع وتثبيت Dragon Drain. الآن يمكنك الاستمرار في شن الهجوم ..."
+	arr["ARABIC","wpa3_dragon_drain_attack_13"]="...بنجاح يمكنك الآن المتابعة لتنفيذ الهجوم Dragon Drain تم تجميع وتثبيت"
 	arr["CHINESE","wpa3_dragon_drain_attack_13"]="Dragon Drain 二进制文件已编译且安装完成。现在您可以继续发动攻击..."
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_14"]="The necessary dependencies are installed"
@@ -867,7 +867,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_14"]="Niezbędne zależności są instalowane"
 	arr["GERMAN","wpa3_dragon_drain_attack_14"]="Die notwendigen Abhängigkeiten sind installiert"
 	arr["TURKISH","wpa3_dragon_drain_attack_14"]="Gerekli bağımlılıklar başarıyla kuruldu"
-	arr["ARABIC","wpa3_dragon_drain_attack_14"]="\${pending_of_translation} يتم تثبيت التبعيات اللازمة"
+	arr["ARABIC","wpa3_dragon_drain_attack_14"]="تم تثبيت التبعيات اللازمة"
 	arr["CHINESE","wpa3_dragon_drain_attack_14"]="必要的依赖已安装完成"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_15"]="There has been some problem in the installation and compilation process. Please check the messages on the screen and solve the problem. The attack cannot be launched"
@@ -881,7 +881,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_15"]="Proces instalacji i kompilacji napotkał trudności. Przeanalizuj wyświetlane komunikaty i usuń problem, aby umożliwić przeprowadzenie ataku"
 	arr["GERMAN","wpa3_dragon_drain_attack_15"]="Es gab ein Problem während den Installations-und Kompilierungsprozess. Bitte überprüfen Sie die Nachrichten auf dem Bildschirm und lösen Sie das Problem. Der Angriff kann nicht gestartet werden"
 	arr["TURKISH","wpa3_dragon_drain_attack_15"]="Kurulum ve derleme sürecinde bir sorun oluştu. Lütfen ekrandaki mesajları kontrol edin ve sorunu giderin. Saldırı başlatılamaz"
-	arr["ARABIC","wpa3_dragon_drain_attack_15"]="\${pending_of_translation} كانت هناك مشكلة في عملية التثبيت والتجميع. يرجى التحقق من الرسائل الموجودة على الشاشة وحل المشكلة. لا يمكن شن الهجوم"
+	arr["ARABIC","wpa3_dragon_drain_attack_15"]="حدثت مشكلة أثناء عملية التثبيت أو التجميع. يرجى مراجعة الرسائل المعروضة على الشاشة وحل المشكلة، حيث لا يمكن تنفيذ الهجوم قبل ذلك"
 	arr["CHINESE","wpa3_dragon_drain_attack_15"]="安装和编译过程中出现了问题。请检查屏幕上的错误信息并尝试解决。目前无法启动攻击"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_16"]="Atheros chipset detected without \${normal_color}ath_masker\${yellow_color} module. It is needed for Atheros chipsets to make this attack to work properly. It will be installed"
@@ -895,7 +895,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_16"]="Wykryto chipset Atheros bez modułu \${normal_color}ath_masker\${yellow_color}. Jest on wymagany do prawidłowego działania ataku na chipsetach Atheros. Zostanie teraz zainstalowany"
 	arr["GERMAN","wpa3_dragon_drain_attack_16"]="Atheros-Chipset ohne \${normal_color}ath_masker\${yellow_color}-Modul. Es ist erforderlich, damit Atheros-Chipsets diesen Angriff richtig funktionieren. Es wird installiert"
 	arr["TURKISH","wpa3_dragon_drain_attack_16"]="Atheros yonga seti \${normal_color}ath_masker\${yellow_color} modülü olmadan tespit edildi. Bu saldırının düzgün çalışabilmesi için Atheros yonga setlerine ihtiyaç vardır. Modül kurulacak"
-	arr["ARABIC","wpa3_dragon_drain_attack_16"]="\${pending_of_translation} تم اكتشاف شرائح أثيروس بدون وحدة \${normal_color}ath_masker\${yellow_color}. هناك حاجة لشرائح أثيروس لجعل هذا الهجوم يعمل بشكل صحيح. سيتم تثبيته"
+	arr["ARABIC","wpa3_dragon_drain_attack_16"]="وهو ضروري لعمل الهجوم بشكل صحيح على هذه الشرائح. سيتم تثبيته الآن ,kernel module \${normal_color}ath_masker\${yellow_color} بدون Atheros تم اكتشاف"
 	arr["CHINESE","wpa3_dragon_drain_attack_16"]="Atheros芯片组检测到缺少\${normal_color}ath_masker\${yellow_color}内核模块。模块即将安装"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_17"]="\${normal_color}ath_masker\${blue_color} kernel module was installed successfully"
@@ -909,7 +909,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_17"]="Moduł jądra \${normal_color}ath_masker\${blue_color} został pomyślnie zainstalowany"
 	arr["GERMAN","wpa3_dragon_drain_attack_17"]="\${normal_color}ath_masker\${blue_color} Kernel-Modul wurde erfolgreich installiert"
 	arr["TURKISH","wpa3_dragon_drain_attack_17"]="\${normal_color}ath_masker\${blue_color} çekirdek modülü başarıyla yüklendi"
-	arr["ARABIC","wpa3_dragon_drain_attack_17"]="\${pending_of_translation} تم تثبيت وحدة \${normal_color}ath_masker\${blue_color} kernel بنجاح"
+	arr["ARABIC","wpa3_dragon_drain_attack_17"]="بنجاح kernel module \${normal_color}ath_masker\${blue_color} تم تثبيت"
 	arr["CHINESE","wpa3_dragon_drain_attack_17"]="\${normal_color}ath_masker\${blue_color}内核模块已成功安装"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_18"]="There was a problem installing \${normal_color}ath_masker\${yellow_color} kernel module. The reliability of the attack could be affected. Be sure to install this manually (\${normal_color}\${ath_masker_repo}\${yellow_color}) as it is needed for Atheros chipsets"
@@ -923,7 +923,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_18"]="Wystąpił problem z instalacją modułu \${normal_color}ath_masker\${yellow_color}. Może to wpłynąć na skuteczność ataku. Pamiętaj, aby zainstalować ręcznie (\${normal_color}\${ath_masker_repo}\${yellow_color}), potrzebny do chipsetów Atheros"
 	arr["GERMAN","wpa3_dragon_drain_attack_18"]="Bei der Installation des Kernelmoduls \${normal_color}ath_masker\${yellow_color} ist ein Problem aufgetreten. Die Effektivität des Angriffs kann dadurch beeinträchtigt werden. Installieren Sie es unbedingt manuell (\${normal_color}\${ath_masker_repo}\${yellow_color}), da es für Atheros-Chips erforderlich ist"
 	arr["TURKISH","wpa3_dragon_drain_attack_18"]="\${normal_color}ath_masker\${yellow_color} çekirdek modülü kurulurken bir sorun oluştu. Saldırının güvenilirliği etkilenebilir. Atheros yonga setleri için gerekli olduğundan (\${normal_color}\${ath_masker_repo}\${yellow_color}) adresinden manuel olarak yüklediğinizden emin olun"
-	arr["ARABIC","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} كانت هناك مشكلة في تثبيت \${normal_color}ath_masker\${yellow_color} kernel module. يمكن أن تتأثر موثوقية الهجوم. تأكد من تثبيت هذا يدويًا (\${normal_color}\${ath_masker_repo}\${yellow_color}) كما هو مطلوب لشرائح Atheros"
+	arr["ARABIC","wpa3_dragon_drain_attack_18"]="Atheros لأنه ضروري لـ (\${normal_color}${ath_masker_repo}\${yellow_color}) قد تتأثر موثوقية الهجوم. تأكد من تثبيته يدويًا من kernel module \${normal_color}ath_masker\${yellow_color} حدثت مشكلة أثناء تثبيت"
 	arr["CHINESE","wpa3_dragon_drain_attack_18"]="安装 \${normal_color}ath_masker\${yellow_color} 内核模块存在问题。攻击的可靠性可能会受到影响。请务必手动安装（\${normal_color}\${ath_masker_repo}\${yellow_color}）它Atheros芯片组所必须的"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_19"]="Atheros chipset has been detected and the kernel module \${normal_color}ath_masker\${blue_color} is also installed"
@@ -937,7 +937,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_19"]="Chipset Atheros i zainstalowany moduł jądra \${normal_color}ath_masker\${blue_color} zostały wykryte"
 	arr["GERMAN","wpa3_dragon_drain_attack_19"]="Der Atheros-Chipsatz wurde erkannt und das Kernel-Modul \${normal_color}ath_masker\${blue_color} ist ebenfalls installiert"
 	arr["TURKISH","wpa3_dragon_drain_attack_19"]="Atheros yonga seti tespit edildi ve \${normal_color}ath_masker\${blue_color} çekirdek modülü de yüklendi"
-	arr["ARABIC","wpa3_dragon_drain_attack_19"]="\${pending_of_translation} تم اكتشاف شرائح Atheros وتم تثبيت وحدة kernel \${normal_color}ath_masker\${blue_color}"
+	arr["ARABIC","wpa3_dragon_drain_attack_19"]=" مثبت بالفعل kernel module \${normal_color}ath_masker\${blue_color} و Atheros تم اكتشاف"
 	arr["CHINESE","wpa3_dragon_drain_attack_19"]="已经检测到Atheros芯片组，已经检测到 \${normal_color}ath_masker\${blue_color} 内核模块"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_20"]="Needed dependencies now will be checked"
@@ -951,7 +951,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_20"]="Wymagane zależności zostaną teraz sprawdzone"
 	arr["GERMAN","wpa3_dragon_drain_attack_20"]="Die benötigten Abhängigkeiten werden jetzt überprüft"
 	arr["TURKISH","wpa3_dragon_drain_attack_20"]="Gerekli bağımlılıklar şimdi kontrol ediliyor"
-	arr["ARABIC","wpa3_dragon_drain_attack_20"]="\${pending_of_translation} سيتم الآن التحقق من التبعيات المطلوبة"
+	arr["ARABIC","wpa3_dragon_drain_attack_20"]="سيتم الآن التحقق من التبعيات المطلوبة"
 	arr["CHINESE","wpa3_dragon_drain_attack_20"]="现在将检查所需的依赖项"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_21"]="Chipset Atheros detected, but you don't have the kernel module \${normal_color}ath_masker\${yellow_color} installed. To install it, kernel headers are needed, and the plugin has not been able to determine the name of the package that is needed to be able to install it. The reliability of the attack could be affected. Be sure to install this manually (\${normal_color}\${ath_masker_repo}\${yellow_color}) as it is needed for Atheros chipsets"
@@ -965,7 +965,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_21"]="Wykryto chipset Atheros, ale brak modułu \${normal_color}ath_masker\${yellow_color} (wymagane nagłówki jądra). Nie można zidentyfikować potrzebnego pakietu. Ręczna instalacja (\${normal_color}\${ath_masker_repo}\${yellow_color}) wymagana dla poprawnego działania ataku"
 	arr["GERMAN","wpa3_dragon_drain_attack_21"]="Chipsatz-Atheros erkannt, aber Sie haben das Kernel-Modul \${normal_color}ath_masker\${yellow_color} nicht installiert. Um es zu installieren, sind Kernel-Header benötigt, und das Plugin konnte den Namen des Pakets nicht bestimmen, das benötigt wird, um es zu installieren. Die Effektivität des Angriffs kann dadurch beeinträchtigt werden. Installieren Sie es manuell unbedingt (\${normal_color}\${ath_masker_repo}\${yellow_color}), da es für Atheros-Chipsets erforderlich ist"
 	arr["TURKISH","wpa3_dragon_drain_attack_21"]="Atheros yonga seti tespit edildi, ancak \${normal_color}ath_masker\${yellow_color} çekirdek modülü yüklü değil. Yüklemek için çekirdek başlık dosyalarına ihtiyaç vardır ve eklenti, gerekli paketin adını belirleyemedi. Saldırının etkinliği etkilenebilir. Bunu manuel olarak (\${normal_color}\${ath_masker_repo}\${yellow_color}) yüklediğinizden emin olun, çünkü Atheros yonga setleri için zorunludur"
-	arr["ARABIC","wpa3_dragon_drain_attack_21"]="\${pending_of_translation} تم اكتشاف شرائح Atheros ، ولكن ليس لديك وحدة kernel \${normal_color}ath_masker\${yellow_color} المثبتة. لتثبيته ، هناك حاجة إلى رؤوس kernel ، ولم يتمكن المكون الإضافي من تحديد اسم الحزمة اللازمة لتكون قادرة على تثبيتها. يمكن أن تتأثر فعالية الهجوم. تأكد من تثبيت هذا يدويًا (\${normal_color}\${ath_masker_repo}\${yellow_color}) لأنه ضروري لشرائح Atheros"
+	arr["ARABIC","wpa3_dragon_drain_attack_21"]="Atheros لأنه ضروري لـ (\${normal_color}\${ath_masker_repo}\${yellow_color}) ولكن المكوّن الإضافي لم يتمكن من تحديد اسم الحزمة المطلوبة. قد تتأثر موثوقية الهجوم. تأكد من تثبيته يدويًا من kernel headers غير مثبت. لتثبيته، تحتاج إلى توافر kernel module \${normal_color}ath_masker\${yellow_color} لكن Atheros تم اكتشاف "
 	arr["CHINESE","wpa3_dragon_drain_attack_21"]="检测到Atheros芯片组，但是您还没有安装内核模块\${normal_color}ath_masker\${yellow_color}。要安装它，需要先安装内核头文件，并且该插件可能无法确定它所需的软件包的名称。请务必手动完成安装操作（\${normal_color}\${ath_masker_repo}\${yellow_color}）是Atheros芯片组所必须的"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_22"]="No need to check dependencies. They were checked previously"
@@ -979,7 +979,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_22"]="Nie trzeba sprawdzać zależności. Były wcześniej sprawdzone"
 	arr["GERMAN","wpa3_dragon_drain_attack_22"]="Keine Notwendigkeit, Abhängigkeiten zu überprüfen. Sie wurden zuvor überprüft"
 	arr["TURKISH","wpa3_dragon_drain_attack_22"]="Bağımlılıkları tekrar kontrol etmeye gerek yok. Daha önce kontrol edildi"
-	arr["ARABIC","wpa3_dragon_drain_attack_22"]="\${pending_of_translation} لا حاجة للتحقق من التبعيات. تم فحصهم من قبل"
+	arr["ARABIC","wpa3_dragon_drain_attack_22"]="لا حاجة للتحقق من التبعيات، حيث تم التحقق منها مسبقًا"
 	arr["CHINESE","wpa3_dragon_drain_attack_22"]="已经完成依赖项检查，无需再次检查。"
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_23"]="Bitrate adjustment supported by your chipset. Adjusting it to improve reliability..."
@@ -993,7 +993,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["POLISH","wpa3_dragon_drain_attack_23"]="Wykryto obsługę zmiany bitrate przez chipset. Automatyczna korekta w celu poprawy stabilności..."
 	arr["GERMAN","wpa3_dragon_drain_attack_23"]="Die von Ihrem Chipsatz unterstützte bitrate-Einstellung. Anpassen, um die Zuverlässigkeit zu verbessern..."
 	arr["TURKISH","wpa3_dragon_drain_attack_23"]="Yonga setiniz tarafından desteklenen bitrate ayarı bulundu. Güvenilirliği artırmak için bunu ayarlayın..."
-	arr["ARABIC","wpa3_dragon_drain_attack_23"]="\${pending_of_translation} ...تعديل bitrate المدعوم من مجموعة الشرائح الخاصة بك. ضبطه لتحسين الموثوقية"
+	arr["ARABIC","wpa3_dragon_drain_attack_23"]="...الخاصة بك. يتم الآن ضبطه لتحسين الموثوقية chipset متاح في bitrate دعم ضبط"
 	arr["CHINESE","wpa3_dragon_drain_attack_23"]="芯片组支持 bitrate 调整。调整它以提高可靠性..."
 
 	arr["ENGLISH","wpa3_dragon_drain_attack_24"]="It seems you have no internet access. It is necessary since components must be installed to carry out the attack"
