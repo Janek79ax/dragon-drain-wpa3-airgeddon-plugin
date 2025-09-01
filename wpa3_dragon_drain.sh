@@ -1006,7 +1006,7 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["ITALIAN","wpa3_dragon_drain_attack_24"]="Sembra che non sei connesso a internet. È necessario perché i componenti devono essere installati per eseguire l'attacco"
 	arr["POLISH","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Wygląda na to, że nie masz połączenia internetowego. Jest to konieczne, ponieważ należy zainstalować komponenty w celu przeprowadzenia ataku"
 	arr["GERMAN","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Es scheint, dass Sie keine Internetverbindung haben. Es scheint, dass Sie keine Internetverbindung haben. Es ist notwendig, da Komponenten installiert werden müssen, um den Angriff auszuführen"
-	arr["TURKISH","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} Görünüşe göre internet erişiminiz yok. Saldırıyı gerçekleştirmek için bileşenlerin kurulması gerektiğinden gereklidir"
+	arr["TURKISH","wpa3_dragon_drain_attack_24"]="İnternet erişiminiz yok gibi görünüyor. Saldırının gerçekleştirilebilmesi için bileşenlerin kurulması gerektiğinden internet erişimi gereklidir"
 	arr["ARABIC","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} إنه ضروري لأنه يجب تثبيت المكونات لتنفيذ الهجوم. يبدو لم يكن لديك اتصال بالإنترنت"
 	arr["CHINESE","wpa3_dragon_drain_attack_24"]="\${pending_of_translation} 您似乎无法访问互联网。由于必须安装组件才能进行攻击，因此有必要"
 }
