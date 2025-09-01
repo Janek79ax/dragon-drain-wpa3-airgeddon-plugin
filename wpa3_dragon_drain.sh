@@ -744,5 +744,5 @@ function wpa3_dragon_drain_prehook_hookable_for_languages() {
 	arr["GERMAN","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} Es scheint, dass Sie keine Internetverbindung haben. Es scheint, dass Sie keine Internetverbindung haben. Es ist notwendig, da Komponenten installiert werden müssen, um den Angriff auszuführen"
 	arr["TURKISH","wpa3_dragon_drain_attack_18"]="İnternet erişiminiz yok gibi görünüyor. Saldırının gerçekleştirilebilmesi için bileşenlerin kurulması gerektiğinden internet erişimi gereklidir"
 	arr["ARABIC","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} إنه ضروري لأنه يجب تثبيت المكونات لتنفيذ الهجوم. يبدو لم يكن لديك اتصال بالإنترنت"
-	arr["CHINESE","wpa3_dragon_drain_attack_18"]="\${pending_of_translation} 您似乎无法访问互联网。由于必须安装组件才能进行攻击，因此有必要"
+	arr["CHINESE","wpa3_dragon_drain_attack_18"]="您似乎无法访问互联网。但必须安装必要组件才能进行下一步攻击"
 }
