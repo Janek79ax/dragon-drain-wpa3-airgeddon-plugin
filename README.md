@@ -1,6 +1,8 @@
 # WPA3 Dragon Drain - airgeddon plugin
 WPA3 Dragon Drain attack packaged as [airgeddon] plugin
 
+![](dragon_drain_logo.png)
+
 ## How Dragon Drain works
 Dragon Drain is a Denial of Service (DoS) technique that overwhelms vulnerable WPA3 access points by flooding them with large numbers of resource-intensive SAE (Simultaneous Authentication of Equals) commit messages. The surge in traffic exhausts the AP’s processing resources, causing legitimate clients to be dropped and preventing new associations. This weakness primarily affects first-generation WPA3 routers and any devices that have not yet been patched against the Dragonblood family of vulnerabilities. Even on vulnerable devices, the effect may take a few minutes to appear, as the access point gradually degrades while processing the excessive volume of authentication packets.
 
