@@ -9,7 +9,7 @@ plugin_author="Janek"
 
 plugin_enabled=1
 
-plugin_minimum_ag_affected_version="11.61"
+plugin_minimum_ag_affected_version="12.0"
 plugin_maximum_ag_affected_version=""
 plugin_distros_supported=("Kali" "Kali arm" "Parrot" "Parrot arm" "Debian" "Ubuntu" "Mint" "Backbox" "Raspberry Pi OS" "Raspbian" "Cyborg" "Puppy")
 
@@ -326,6 +326,10 @@ function wpa3_dragon_drain_attack_option() {
 	fi
 
 	if ! validate_wpa3_network; then
+		return 1
+	fi
+
+	if ! check_6ghz_thirdparty_tools_compatibility; then
 		return 1
 	fi
 
