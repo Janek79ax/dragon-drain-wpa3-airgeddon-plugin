@@ -9,7 +9,7 @@ plugin_author="Janek"
 
 plugin_enabled=1
 
-plugin_minimum_ag_affected_version="12.0"
+plugin_minimum_ag_affected_version="12.01"
 plugin_maximum_ag_affected_version=""
 plugin_distros_supported=("Kali" "Kali arm" "Parrot" "Parrot arm" "Debian" "Ubuntu" "Mint" "Backbox" "Raspberry Pi OS" "Raspbian" "Cyborg" "Puppy")
 
@@ -31,7 +31,9 @@ function exec_wpa3_dragon_drain_attack() {
 	iw dev "${interface}" set channel "${channel}" > /dev/null 2>&1
 	recalculate_windows_sizes
 	manage_output "+j -bg \"#000000\" -fg \"#FFC0CB\" -geometry ${g1_topright_window} -T \"wpa3 dragon drain attack\"" "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_install_path} ${colorize}" "wpa3 dragon drain attack" "active"
-	wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_install_path}" "wpa3 dragon drain attack"
+	if ! wait_for_process "${python3} ${scriptfolder}${plugins_dir}wpa3_dragon_drain_attack.py ${bssid} ${channel} ${interface} ${dragon_drain_install_path}" "wpa3 dragon drain attack"; then
+		return 1
+	fi
 }
 
 #Custom function. Validata if Dragon Drain binary exists
